@@ -3,587 +3,556 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#071426">
-<title>Globe Explorer | World Mapping Platform</title>
+<meta name="theme-color" content="#061426">
 
-<!-- Leaflet map -->
+<title>Globe Explorer - Professional World Mapping</title>
+
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-<!-- Icons -->
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-<!-- 3D Globe -->
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 <script src="https://unpkg.com/globe.gl"></script>
-
-<!-- Phone number information -->
-<script src="https://unpkg.com/libphonenumber-js@1.11.20/bundle/libphonenumber-max.js"></script>
 
 <style>
 :root {
-    --bg:#071426;
-    --panel:#0d2038;
-    --panel2:#102944;
-    --blue:#168cff;
-    --gold:#e8b84c;
-    --text:#f4f8ff;
-    --muted:#9bb0c8;
-    --border:rgba(255,255,255,.1);
+ --bg:#061426;
+ --panel:#0c2038;
+ --panel2:#102b48;
+ --blue:#168cff;
+ --gold:#e8b84c;
+ --text:#f5f8ff;
+ --muted:#a4b7cc;
+ --border:rgba(255,255,255,.12);
 }
 
 * {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+ box-sizing:border-box;
+ margin:0;
+ padding:0;
 }
 
 body {
-    background:var(--bg);
-    color:var(--text);
-    font-family:Arial, sans-serif;
-    overflow:hidden;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Arial,sans-serif;
+ overflow:hidden;
 }
 
 button,input,select {
-    font:inherit;
+ font:inherit;
 }
 
 button {
-    cursor:pointer;
+ cursor:pointer;
 }
 
-/* MAIN APPLICATION */
-
 .app {
-    height:100dvh;
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
+ width:100%;
+ height:100dvh;
+ display:flex;
+ flex-direction:column;
 }
 
 /* HEADER */
 
 header {
-    height:65px;
-    min-height:65px;
-    background:#08182b;
-    border-bottom:1px solid var(--border);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 18px;
-    z-index:1000;
+ height:62px;
+ flex-shrink:0;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:0 15px;
+ background:#08192d;
+ border-bottom:1px solid var(--border);
+ z-index:1000;
 }
 
 .brand {
-    display:flex;
-    align-items:center;
-    gap:11px;
-    font-size:18px;
-    font-weight:bold;
+ display:flex;
+ align-items:center;
+ gap:10px;
+ font-size:17px;
+ font-weight:bold;
 }
 
 .brand-icon {
-    width:39px;
-    height:39px;
-    border-radius:12px;
-    display:grid;
-    place-items:center;
-    color:white;
-    background:linear-gradient(135deg,#168cff,#064b9b);
-    font-size:19px;
+ width:38px;
+ height:38px;
+ display:grid;
+ place-items:center;
+ background:linear-gradient(135deg,#168cff,#064a91);
+ border-radius:12px;
 }
 
 .brand span {
-    color:var(--gold);
+ color:var(--gold);
 }
 
-.header-right {
-    display:flex;
-    gap:9px;
-    align-items:center;
+.header-actions {
+ display:flex;
+ gap:7px;
 }
 
-.header-btn {
-    border:1px solid var(--border);
-    background:#122b46;
-    color:white;
-    border-radius:9px;
-    padding:10px 13px;
+.header-actions button {
+ background:#122c48;
+ border:1px solid var(--border);
+ color:white;
+ border-radius:8px;
+ padding:9px 12px;
 }
 
-.header-btn:hover {
-    background:#1b4168;
-}
-
-.status {
-    font-size:11px;
-    color:#6ee7a5;
-}
-
-/* MAIN CONTENT */
+/* MAIN */
 
 .main {
-    flex:1;
-    min-height:0;
-    position:relative;
-    display:flex;
+ flex:1;
+ min-height:0;
+ display:flex;
+ position:relative;
 }
 
 /* SIDEBAR */
 
 .sidebar {
-    width:350px;
-    min-width:350px;
-    height:100%;
-    background:rgba(8,24,43,.98);
-    border-right:1px solid var(--border);
-    overflow-y:auto;
-    padding:17px;
-    z-index:500;
-    transition:transform .3s ease, width .3s ease;
+ width:340px;
+ min-width:340px;
+ height:100%;
+ overflow-y:auto;
+ background:#091a2e;
+ padding:13px;
+ border-right:1px solid var(--border);
+ transition:all .3s ease;
+ z-index:500;
 }
 
 .sidebar.hidden {
-    width:0;
-    min-width:0;
-    padding:0;
-    overflow:hidden;
-    border:none;
+ width:0;
+ min-width:0;
+ padding:0;
+ overflow:hidden;
+ border:0;
 }
 
 .sidebar::-webkit-scrollbar {
-    width:5px;
+ width:5px;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background:#29496b;
-    border-radius:10px;
+ background:#31516f;
+ border-radius:10px;
 }
 
 .section {
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:15px;
-    margin-bottom:13px;
+ background:var(--panel);
+ border:1px solid var(--border);
+ border-radius:13px;
+ padding:13px;
+ margin-bottom:12px;
 }
 
-.section-title {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:13px;
-    font-weight:bold;
-    font-size:14px;
+.section h3 {
+ font-size:13px;
+ margin-bottom:12px;
+ color:#fff;
 }
 
-.section-title i {
-    color:var(--gold);
-    margin-right:7px;
+.section h3 i {
+ color:var(--gold);
+ margin-right:7px;
 }
 
 input,select {
-    width:100%;
-    padding:12px;
-    border-radius:9px;
-    border:1px solid #294663;
-    outline:none;
-    background:#071a2e;
-    color:white;
-    margin-bottom:9px;
+ display:block;
+ width:100%;
+ padding:12px;
+ border-radius:8px;
+ border:1px solid #294663;
+ outline:none;
+ background:#071a2e;
+ color:white;
+ margin-bottom:8px;
 }
 
 input:focus,select:focus {
-    border-color:var(--blue);
+ border-color:var(--blue);
 }
 
 input::placeholder {
-    color:#7890aa;
+ color:#829ab3;
 }
 
-.primary-btn {
-    width:100%;
-    padding:12px;
-    border:0;
-    border-radius:9px;
-    background:linear-gradient(120deg,#168cff,#0755a7);
-    color:white;
-    font-weight:bold;
+.btn {
+ width:100%;
+ padding:11px;
+ border:0;
+ border-radius:8px;
+ background:linear-gradient(120deg,#168cff,#0753a3);
+ color:white;
+ font-weight:bold;
+ margin-top:3px;
 }
 
-.primary-btn:hover {
-    filter:brightness(1.15);
+.btn.secondary {
+ background:#173653;
+ border:1px solid #315574;
 }
 
-.secondary-btn {
-    width:100%;
-    padding:11px;
-    border:1px solid #315371;
-    background:#15304d;
-    color:white;
-    border-radius:9px;
-    margin-top:7px;
+.btn:hover {
+ filter:brightness(1.15);
 }
 
-.grid-buttons {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
+.grid {
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:7px;
 }
 
-.grid-buttons button {
-    padding:11px 7px;
-    border:1px solid #294663;
-    border-radius:9px;
-    color:white;
-    background:#102b47;
-    font-size:12px;
+.grid button {
+ background:#122d49;
+ color:white;
+ border:1px solid #294663;
+ border-radius:8px;
+ padding:11px 5px;
+ font-size:12px;
 }
 
-.grid-buttons button.active {
-    border-color:var(--blue);
-    background:#124477;
+.grid button.active {
+ border-color:#168cff;
+ background:#164b7c;
 }
 
-.small-text {
-    color:var(--muted);
-    font-size:11px;
-    line-height:1.6;
-    margin-top:8px;
+.note {
+ color:var(--muted);
+ font-size:11px;
+ line-height:1.5;
+ margin-top:9px;
 }
 
-.result-box {
-    display:none;
-    margin-top:12px;
-    padding:12px;
-    background:#071a2e;
-    border:1px solid var(--border);
-    border-radius:10px;
-    font-size:12px;
-    line-height:1.7;
-    overflow-wrap:anywhere;
+.result {
+ display:none;
+ background:#071a2e;
+ border:1px solid var(--border);
+ border-radius:9px;
+ padding:11px;
+ margin-top:10px;
+ font-size:12px;
+ line-height:1.7;
+ overflow-wrap:anywhere;
 }
 
-.result-box.show {
-    display:block;
+.result.show {
+ display:block;
 }
 
-.result-box strong {
-    color:var(--gold);
+.result strong {
+ color:var(--gold);
 }
 
-.divider {
-    height:1px;
-    background:var(--border);
-    margin:12px 0;
+.result a {
+ color:#72bcff;
 }
 
-/* MAP AREA */
+/* MAP */
 
 .map-area {
-    flex:1;
-    position:relative;
-    min-width:0;
-    overflow:hidden;
-    background:#020b18;
+ position:relative;
+ flex:1;
+ min-width:0;
+ overflow:hidden;
+ background:#020b18;
 }
 
 #map {
-    height:100%;
-    width:100%;
-    display:none;
+ position:absolute;
+ inset:0;
+ display:none;
+ z-index:1;
 }
 
 #map.visible {
-    display:block;
+ display:block;
 }
 
 #globeContainer {
-    width:100%;
-    height:100%;
-    position:absolute;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:
-      radial-gradient(ellipse at center,#102b48 0%,#06172b 55%,#020b18 100%);
+ position:absolute;
+ inset:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ background:radial-gradient(ellipse,#153553,#061426 70%,#020812);
 }
 
 #globeViz {
-    width:100%;
-    height:100%;
+ width:100%;
+ height:100%;
 }
 
-#globeViz canvas {
-    max-width:100%;
-    max-height:100%;
+/* SEARCH */
+
+.search-bar {
+ position:absolute;
+ top:15px;
+ left:50%;
+ transform:translateX(-50%);
+ width:min(500px,72%);
+ display:flex;
+ gap:6px;
+ z-index:400;
 }
 
-/* MAP TOP SEARCH */
-
-.map-search {
-    position:absolute;
-    top:17px;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(520px,75%);
-    display:flex;
-    gap:7px;
-    z-index:400;
+.search-bar input {
+ margin:0;
+ background:rgba(6,20,38,.96);
+ box-shadow:0 5px 20px #0006;
 }
 
-.map-search input {
-    margin:0;
-    background:rgba(7,22,40,.94);
-    box-shadow:0 8px 30px #0005;
+.search-bar button {
+ width:48px;
+ flex-shrink:0;
+ background:var(--blue);
+ color:white;
+ border:0;
+ border-radius:8px;
 }
 
-.map-search button {
-    width:48px;
-    flex-shrink:0;
-    border:0;
-    border-radius:9px;
-    color:white;
-    background:var(--blue);
-}
+/* SIDEBAR BUTTON */
 
-/* HIDE PANEL BUTTON */
-
-.toggle-sidebar {
-    position:absolute;
-    top:17px;
-    left:12px;
-    z-index:600;
-    background:#102b47;
-    color:white;
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:12px 14px;
-    box-shadow:0 5px 20px #0005;
-}
-
-.sidebar.hidden ~ .map-area .toggle-sidebar {
-    left:12px;
+.toggle {
+ position:absolute;
+ top:15px;
+ left:12px;
+ z-index:600;
+ background:#102c48;
+ color:white;
+ border:1px solid var(--border);
+ border-radius:9px;
+ padding:12px 14px;
 }
 
 /* MAP CONTROLS */
 
-.map-controls {
-    position:absolute;
-    right:15px;
-    top:85px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    z-index:400;
+.controls {
+ position:absolute;
+ right:13px;
+ top:82px;
+ display:flex;
+ flex-direction:column;
+ gap:7px;
+ z-index:400;
 }
 
-.map-control {
-    width:43px;
-    height:43px;
-    border-radius:11px;
-    border:1px solid var(--border);
-    color:white;
-    background:rgba(8,24,43,.94);
-    font-size:16px;
+.controls button {
+ width:42px;
+ height:42px;
+ border-radius:10px;
+ background:rgba(7,24,43,.96);
+ border:1px solid var(--border);
+ color:white;
+ font-size:15px;
 }
 
-.map-control:hover {
-    background:#15538b;
+.controls button:hover {
+ background:#14558d;
 }
 
-/* BOTTOM INFORMATION */
+/* LOCATION INFO */
 
-.bottom-info {
-    position:absolute;
-    bottom:15px;
-    left:15px;
-    z-index:400;
-    background:rgba(7,22,40,.93);
-    border:1px solid var(--border);
-    border-radius:11px;
-    padding:11px 14px;
-    font-size:11px;
-    color:#c6d7e9;
-    max-width:80%;
+.info {
+ position:absolute;
+ left:12px;
+ bottom:13px;
+ z-index:400;
+ background:rgba(6,20,38,.94);
+ border:1px solid var(--border);
+ border-radius:9px;
+ padding:10px 12px;
+ font-size:11px;
+ max-width:75%;
+ line-height:1.5;
 }
 
-.bottom-info strong {
-    color:var(--gold);
+.info strong {
+ color:var(--gold);
 }
 
-/* FLOATING LOCATION CARD */
-
-.location-card {
-    position:absolute;
-    bottom:15px;
-    right:15px;
-    z-index:400;
-    background:rgba(8,24,43,.95);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:13px;
-    max-width:230px;
-    display:none;
-    font-size:12px;
-    line-height:1.6;
+.selected-card {
+ position:absolute;
+ right:12px;
+ bottom:13px;
+ z-index:400;
+ display:none;
+ width:min(240px,55%);
+ padding:12px;
+ background:rgba(6,20,38,.96);
+ border:1px solid var(--border);
+ border-radius:11px;
+ font-size:11px;
+ line-height:1.6;
 }
 
-.location-card.show {
-    display:block;
+.selected-card.show {
+ display:block;
 }
 
-.location-card button {
-    border:0;
-    color:white;
-    background:var(--blue);
-    border-radius:7px;
-    padding:8px 10px;
-    margin-top:7px;
+.selected-card button {
+ margin-top:7px;
+ padding:8px 10px;
+ border:0;
+ border-radius:7px;
+ background:var(--blue);
+ color:white;
 }
 
-/* LOADING */
+/* MEDIA */
+
+.media-grid {
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:7px;
+ margin-top:10px;
+}
+
+.media-grid img {
+ width:100%;
+ height:100px;
+ object-fit:cover;
+ border-radius:7px;
+ background:#142c43;
+}
+
+.media-grid a {
+ color:white;
+ text-decoration:none;
+ font-size:10px;
+}
+
+.video-button {
+ display:block;
+ padding:11px;
+ background:#183a5c;
+ border-radius:8px;
+ color:white;
+ text-align:center;
+ text-decoration:none;
+ margin-top:8px;
+}
+
+footer {
+ min-height:27px;
+ background:#04101f;
+ border-top:1px solid var(--border);
+ color:#8ba2ba;
+ font-size:10px;
+ display:grid;
+ place-items:center;
+}
 
 .loading {
-    position:absolute;
-    inset:0;
-    display:none;
-    place-items:center;
-    z-index:900;
-    background:#061426a8;
-    font-size:14px;
+ position:absolute;
+ inset:0;
+ background:#061426b8;
+ z-index:900;
+ display:none;
+ place-items:center;
 }
 
 .loading.show {
-    display:grid;
+ display:grid;
 }
 
-.loading-box {
-    background:#102b47;
-    padding:20px 25px;
-    border-radius:13px;
-    text-align:center;
+.loading div {
+ padding:20px;
+ border-radius:12px;
+ background:#102b48;
+ text-align:center;
 }
 
 .loading i {
-    font-size:25px;
-    color:var(--gold);
-    margin-bottom:10px;
-}
-
-/* FOOTER */
-
-footer {
-    min-height:30px;
-    background:#061426;
-    border-top:1px solid var(--border);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#8198b1;
-    font-size:10px;
-    padding:5px;
-}
-
-/* LEAFLET */
-
-.leaflet-control-attribution {
-    font-size:9px !important;
-}
-
-.leaflet-popup-content-wrapper {
-    background:#0c2037;
-    color:white;
-    border-radius:10px;
-}
-
-.leaflet-popup-tip {
-    background:#0c2037;
+ color:var(--gold);
+ font-size:25px;
+ margin-bottom:9px;
 }
 
 /* MOBILE */
 
 @media(max-width:750px) {
-    header {
-        height:58px;
-        min-height:58px;
-        padding:0 10px;
-    }
 
-    .brand {
-        font-size:14px;
-    }
+ header {
+  height:56px;
+  padding:0 9px;
+ }
 
-    .brand-icon {
-        width:34px;
-        height:34px;
-    }
+ .brand {
+  font-size:13px;
+ }
 
-    .status {
-        display:none;
-    }
+ .brand-icon {
+  width:32px;
+  height:32px;
+ }
 
-    .sidebar {
-        position:absolute;
-        left:0;
-        top:0;
-        bottom:0;
-        width:min(330px,88vw);
-        min-width:0;
-        box-shadow:10px 0 30px #0006;
-    }
+ .header-actions button {
+  padding:8px;
+  font-size:11px;
+ }
 
-    .sidebar.hidden {
-        transform:translateX(-105%);
-        width:min(330px,88vw);
-        min-width:0;
-    }
+ .sidebar {
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:min(330px,88vw);
+  min-width:0;
+  box-shadow:8px 0 30px #0007;
+ }
 
-    .map-search {
-        top:72px;
-        width:calc(100% - 100px);
-        left:auto;
-        right:10px;
-        transform:none;
-    }
+ .sidebar.hidden {
+  transform:translateX(-105%);
+  width:min(330px,88vw);
+ }
 
-    .map-search input {
-        padding:11px 9px;
-        font-size:12px;
-    }
+ .search-bar {
+  top:69px;
+  left:auto;
+  right:9px;
+  transform:none;
+  width:calc(100% - 85px);
+ }
 
-    .toggle-sidebar {
-        top:72px;
-        left:10px;
-        padding:11px 12px;
-    }
+ .search-bar input {
+  font-size:12px;
+  padding:11px 8px;
+ }
 
-    .map-controls {
-        top:130px;
-        right:10px;
-    }
+ .toggle {
+  top:69px;
+  left:9px;
+  padding:11px 12px;
+ }
 
-    .map-control {
-        width:39px;
-        height:39px;
-    }
+ .controls {
+  top:122px;
+  right:9px;
+ }
 
-    .bottom-info {
-        bottom:10px;
-        left:10px;
-        font-size:10px;
-    }
+ .controls button {
+  width:38px;
+  height:38px;
+ }
 
-    .location-card {
-        bottom:10px;
-        right:10px;
-        max-width:180px;
-    }
+ .info {
+  bottom:8px;
+  left:8px;
+  font-size:9px;
+ }
+
+ .selected-card {
+  right:8px;
+  bottom:8px;
+  width:48%;
+ }
+
 }
 </style>
 </head>
@@ -593,28 +562,24 @@ footer {
 <div class="app">
 
 <header>
-    <div class="brand">
-        <div class="brand-icon">
-            <i class="fa-solid fa-earth-africa"></i>
-        </div>
-        GLOBE <span>EXPLORER</span>
-    </div>
 
-    <div class="header-right">
-        <span class="status">
-            <i class="fa-solid fa-circle"></i> SYSTEM ONLINE
-        </span>
+ <div class="brand">
+  <div class="brand-icon">
+   <i class="fa-solid fa-earth-africa"></i>
+  </div>
+  GLOBE <span>EXPLORER</span>
+ </div>
 
-        <button class="header-btn" onclick="showGlobe()">
-            <i class="fa-solid fa-earth-americas"></i>
-            <span class="desktop-label"> Globe</span>
-        </button>
+ <div class="header-actions">
+  <button onclick="showGlobe()">
+   <i class="fa-solid fa-globe"></i> Globe
+  </button>
 
-        <button class="header-btn" onclick="showMap()">
-            <i class="fa-solid fa-map"></i>
-            <span class="desktop-label"> Map</span>
-        </button>
-    </div>
+  <button onclick="showMap()">
+   <i class="fa-solid fa-map"></i> Map
+  </button>
+ </div>
+
 </header>
 
 <div class="main">
@@ -623,230 +588,232 @@ footer {
 
 <aside class="sidebar" id="sidebar">
 
-    <div class="section">
-        <div class="section-title">
-            <span><i class="fa-solid fa-magnifying-glass"></i> Location Search</span>
-        </div>
+ <div class="section">
 
-        <input id="locationInput"
-        placeholder="Search any city, country or place..."
-        onkeydown="if(event.key==='Enter') searchLocation()">
+  <h3><i class="fa-solid fa-magnifying-glass"></i> WORLD LOCATION SEARCH</h3>
 
-        <button class="primary-btn" onclick="searchLocation()">
-            <i class="fa-solid fa-search"></i> Explore Location
-        </button>
+  <input id="placeInput"
+  placeholder="Enter city, country or landmark"
+  onkeydown="if(event.key==='Enter') searchPlace()">
 
-        <button class="secondary-btn" onclick="useMyLocation()">
-            <i class="fa-solid fa-location-crosshairs"></i>
-            Find My Location
-        </button>
+  <button class="btn" onclick="searchPlace()">
+   <i class="fa-solid fa-search"></i> Search Location
+  </button>
 
-        <div id="searchResult" class="result-box"></div>
-    </div>
+  <button class="btn secondary" onclick="myLocation()">
+   <i class="fa-solid fa-location-crosshairs"></i> My Current Location
+  </button>
 
-    <div class="section">
-        <div class="section-title">
-            <span><i class="fa-solid fa-layer-group"></i> Map Appearance</span>
-        </div>
+  <div id="searchResult" class="result"></div>
 
-        <div class="grid-buttons">
-            <button class="active" onclick="changeLayer('street',this)">
-                <i class="fa-solid fa-map"></i><br>Standard
-            </button>
+ </div>
 
-            <button onclick="changeLayer('satellite',this)">
-                <i class="fa-solid fa-satellite"></i><br>Satellite
-            </button>
+ <div class="section">
 
-            <button onclick="changeLayer('hybrid',this)">
-                <i class="fa-solid fa-earth-americas"></i><br>Hybrid
-            </button>
+  <h3><i class="fa-solid fa-layer-group"></i> MAP LAYERS</h3>
 
-            <button onclick="changeLayer('terrain',this)">
-                <i class="fa-solid fa-mountain"></i><br>Terrain
-            </button>
-        </div>
+  <div class="grid">
 
-        <p class="small-text">
-            Satellite imagery is provided by an external map imagery service.
-            Image availability and resolution vary by location.
-        </p>
-    </div>
+   <button class="active" onclick="setLayer('street',this)">
+    <i class="fa-solid fa-map"></i><br>Standard
+   </button>
 
-    <div class="section">
-        <div class="section-title">
-            <span><i class="fa-solid fa-route"></i> Route Planner</span>
-        </div>
+   <button onclick="setLayer('satellite',this)">
+    <i class="fa-solid fa-satellite"></i><br>Satellite
+   </button>
 
-        <input id="startPoint" placeholder="Starting location">
+   <button onclick="setLayer('hybrid',this)">
+    <i class="fa-solid fa-earth-americas"></i><br>Hybrid
+   </button>
 
-        <input id="endPoint" placeholder="Destination">
+   <button onclick="setLayer('terrain',this)">
+    <i class="fa-solid fa-mountain"></i><br>Terrain
+   </button>
 
-        <select id="travelMode">
-            <option value="driving-car">Car / Motorcycle</option>
-            <option value="cycling-regular">Bicycle</option>
-            <option value="foot-walking">Walking / Trekking</option>
-        </select>
+  </div>
 
-        <button class="primary-btn" onclick="calculateRoute()">
-            <i class="fa-solid fa-directions"></i> Calculate Route
-        </button>
+  <p class="note">
+   Satellite imagery is provided by Esri. Available image quality
+   depends on the location and zoom level.
+  </p>
 
-        <div id="routeResult" class="result-box"></div>
+ </div>
 
-        <p class="small-text">
-            Route calculation requires an OpenRouteService API key.
-            See the code instructions near the bottom.
-        </p>
-    </div>
+ <div class="section">
 
-    <div class="section">
-        <div class="section-title">
-            <span><i class="fa-solid fa-phone"></i> Phone Number Information</span>
-        </div>
+  <h3><i class="fa-solid fa-images"></i> LOCATION PHOTOGRAPHS</h3>
 
-        <input id="phoneInput"
-        placeholder="Enter phone number with country code">
+  <button class="btn" onclick="loadPhotos()">
+   <i class="fa-solid fa-camera"></i> Find Related Pictures
+  </button>
 
-        <button class="primary-btn" onclick="lookupPhone()">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            Analyse Number
-        </button>
+  <div id="photoResult" class="result"></div>
 
-        <div id="phoneResult" class="result-box"></div>
+  <p class="note">
+   Photographs are retrieved from Wikimedia Commons.
+   They may be related to the selected place rather than
+   photographs of the exact coordinates.
+  </p>
 
-        <p class="small-text">
-            This tool checks numbering information. It cannot reveal a
-            person's live location, state, neighbourhood or exact address
-            from a mobile number.
-        </p>
-    </div>
+ </div>
 
-    <div class="section">
-        <div class="section-title">
-            <span><i class="fa-solid fa-share-nodes"></i> Location Sharing</span>
-        </div>
+ <div class="section">
 
-        <button class="primary-btn" onclick="shareMyLocation()">
-            <i class="fa-solid fa-share"></i> Share My Location
-        </button>
+  <h3><i class="fa-brands fa-youtube"></i> LOCATION VIDEOS</h3>
 
-        <p class="small-text">
-            Sharing requires your permission. Your location is not shared
-            automatically.
-        </p>
-    </div>
+  <div id="videoResult" class="result show">
+   Select a location to find related videos.
+  </div>
 
-    <div class="section">
-        <div class="section-title">
-            <span><i class="fa-solid fa-images"></i> Place Photos</span>
-        </div>
+  <a id="videoLink" class="video-button"
+  href="https://www.youtube.com"
+  target="_blank" rel="noopener">
+   <i class="fa-brands fa-youtube"></i> Find Location Videos
+  </a>
 
-        <button class="secondary-btn" onclick="findPhotos()">
-            <i class="fa-solid fa-image"></i> Find Related Photos
-        </button>
+ </div>
 
-        <div id="photoResult" class="result-box"></div>
-    </div>
+ <div class="section">
 
-    <div class="section">
-        <div class="section-title">
-            <span><i class="fa-solid fa-street-view"></i> Street-Level View</span>
-        </div>
+  <h3><i class="fa-solid fa-route"></i> ROUTE PLANNER</h3>
 
-        <button class="primary-btn" onclick="openStreetView()">
-            <i class="fa-solid fa-street-view"></i>
-            Open Street View
-        </button>
+  <input id="routeStart" placeholder="Starting point">
 
-        <p class="small-text">
-            Street-level imagery is available only in locations covered
-            by the imagery provider.
-        </p>
-    </div>
+  <input id="routeEnd" placeholder="Destination">
 
-    <div class="section">
-        <div class="section-title">
-            <span><i class="fa-solid fa-circle-info"></i> About Explorer</span>
-        </div>
+  <select id="routeMode">
+   <option value="driving">Car / Motorcycle</option>
+   <option value="walking">Walking / Trekking</option>
+   <option value="bicycling">Bicycle</option>
+  </select>
 
-        <p class="small-text">
-            Globe Explorer is an interactive mapping platform for exploring
-            places around the world. It combines a 3D globe, maps, satellite
-            imagery, location search and route planning.
-        </p>
-    </div>
+  <button class="btn" onclick="calculateRoute()">
+   <i class="fa-solid fa-directions"></i> Get Directions
+  </button>
+
+  <div id="routeResult" class="result"></div>
+
+  <p class="note">
+   Driving routes are calculated using OSRM. Walking and
+   bicycle directions open Google Maps.
+  </p>
+
+ </div>
+
+ <div class="section">
+
+  <h3><i class="fa-solid fa-phone"></i> PHONE NUMBER INFORMATION</h3>
+
+  <input id="phoneInput"
+  placeholder="Example: +2348012345678">
+
+  <button class="btn" onclick="checkPhone()">
+   Analyse Number
+  </button>
+
+  <div id="phoneResult" class="result"></div>
+
+  <p class="note">
+   A mobile number cannot reveal the owner's current state,
+   neighbourhood or live position.
+  </p>
+
+ </div>
+
+ <div class="section">
+
+  <h3><i class="fa-solid fa-share-nodes"></i> LOCATION SHARING</h3>
+
+  <button class="btn" onclick="shareLocation()">
+   Share My Location
+  </button>
+
+ </div>
+
+ <div class="section">
+
+  <h3><i class="fa-solid fa-circle-info"></i> ABOUT</h3>
+
+  <p class="note">
+   Globe Explorer is a world exploration platform combining
+   interactive maps, a 3D globe, satellite imagery, location
+   search, photographs, videos and directions.
+  </p>
+
+ </div>
 
 </aside>
 
 <!-- MAP AREA -->
 
-<div class="map-area">
+<main class="map-area">
 
-    <button class="toggle-sidebar" onclick="toggleSidebar()"
-    title="Hide or show tools">
-        <i class="fa-solid fa-bars"></i>
-    </button>
+ <button class="toggle" onclick="toggleSidebar()">
+  <i class="fa-solid fa-bars"></i>
+ </button>
 
-    <div class="map-search">
-        <input id="topSearch"
-        placeholder="Search a location..."
-        onkeydown="if(event.key==='Enter') searchTopLocation()">
+ <div class="search-bar">
 
-        <button onclick="searchTopLocation()">
-            <i class="fa-solid fa-search"></i>
-        </button>
-    </div>
+  <input id="topSearch"
+  placeholder="Search any place in the world..."
+  onkeydown="if(event.key==='Enter') searchTop()">
 
-    <div id="globeContainer">
-        <div id="globeViz"></div>
-    </div>
+  <button onclick="searchTop()">
+   <i class="fa-solid fa-search"></i>
+  </button>
 
-    <div id="map"></div>
+ </div>
 
-    <div class="map-controls">
+ <div id="globeContainer">
+  <div id="globeViz"></div>
+ </div>
 
-        <button class="map-control" onclick="zoomIn()" title="Zoom in">
-            <i class="fa-solid fa-plus"></i>
-        </button>
+ <div id="map"></div>
 
-        <button class="map-control" onclick="zoomOut()" title="Zoom out">
-            <i class="fa-solid fa-minus"></i>
-        </button>
+ <div class="controls">
 
-        <button class="map-control" onclick="useMyLocation()" title="My location">
-            <i class="fa-solid fa-location-crosshairs"></i>
-        </button>
+  <button onclick="zoomIn()" title="Zoom in">
+   <i class="fa-solid fa-plus"></i>
+  </button>
 
-        <button class="map-control" onclick="returnToGlobe()" title="Return to globe">
-            <i class="fa-solid fa-earth-americas"></i>
-        </button>
+  <button onclick="zoomOut()" title="Zoom out">
+   <i class="fa-solid fa-minus"></i>
+  </button>
 
-    </div>
+  <button onclick="myLocation()" title="My location">
+   <i class="fa-solid fa-location-crosshairs"></i>
+  </button>
 
-    <div class="bottom-info">
-        <strong>GLOBE EXPLORER</strong><br>
-        <span id="coordinates">Select a place on the globe to explore it.</span>
-    </div>
+  <button onclick="showGlobe()" title="3D Earth">
+   <i class="fa-solid fa-earth-americas"></i>
+  </button>
 
-    <div class="location-card" id="locationCard">
-        <strong id="cardTitle">Selected Location</strong>
-        <div id="cardDetails"></div>
-        <button onclick="openSelectedInMap()">Explore This Place</button>
-    </div>
+ </div>
 
-    <div class="loading" id="loading">
-        <div class="loading-box">
-            <i class="fa-solid fa-earth-americas fa-spin"></i>
-            <div>Loading location...</div>
-        </div>
-    </div>
+ <div class="info">
+  <strong>GLOBE EXPLORER</strong><br>
+  <span id="coordinateInfo">Tap the Earth or search for a location.</span>
+ </div>
 
-</div>
+ <div class="selected-card" id="selectedCard">
+  <strong id="selectedName">Selected Location</strong>
+  <div id="selectedDetails"></div>
+  <button onclick="openSelectedLocation()">Zoom Into Location</button>
+ </div>
+
+ <div class="loading" id="loading">
+  <div>
+   <i class="fa-solid fa-earth-americas fa-spin"></i>
+   <br>Loading...
+  </div>
+ </div>
+
+</main>
+
 </div>
 
 <footer>
-    GLOBE EXPLORER · WORLD MAPPING PLATFORM · MAP DATA © OPENSTREETMAP CONTRIBUTORS
+ WORLD EXPLORATION PLATFORM · © OPENSTREETMAP CONTRIBUTORS · IMAGERY © ESRI
 </footer>
 
 </div>
@@ -856,214 +823,203 @@ footer {
 <script>
 
 /* =====================================
-   GLOBAL VARIABLES
+   APPLICATION VARIABLES
 ===================================== */
 
 let map;
+let marker;
+let routeLine;
 let currentLayer;
-let selectedLat = 9.0820;
-let selectedLng = 8.6753;
-let selectedName = "Nigeria";
-let currentZoom = 6;
-let routeLayer = null;
-let currentMapLayer = "street";
-
-const ORS_API_KEY = "YOUR_OPENROUTESERVICE_API_KEY";
-
-const loading = document.getElementById("loading");
-
-function showLoading() {
-    loading.classList.add("show");
-}
-
-function hideLoading() {
-    loading.classList.remove("show");
-}
+let currentPlace = "World";
+let latitude = 9.0820;
+let longitude = 8.6753;
+let globe;
 
 /* =====================================
-   SIDEBAR HIDE / SHOW
+   BASIC FUNCTIONS
 ===================================== */
 
+function loading(show) {
+ document.getElementById("loading").classList.toggle("show",show);
+}
+
 function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("hidden");
+ document.getElementById("sidebar").classList.toggle("hidden");
+}
+
+function escapeHTML(value) {
+ return String(value).replace(/[&<>"']/g,c=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+ }[c]));
 }
 
 /* =====================================
    3D GLOBE
 ===================================== */
 
-let globe;
+function createGlobe() {
 
-function initializeGlobe() {
+ const element=document.getElementById("globeViz");
 
-    const globeElement = document.getElementById("globeViz");
+ if(typeof Globe==="undefined") {
+  element.innerHTML=
+   "<p style='padding:30px;text-align:center'>3D globe could not load. Please check your internet connection.</p>";
+  return;
+ }
 
-    globe = Globe()(globeElement)
-        .globeImageUrl(
-          "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-        )
-        .bumpImageUrl(
-          "https://unpkg.com/three-globe/example/img/earth-topology.png"
-        )
-        .backgroundColor("#020b18")
-        .showAtmosphere(true)
-        .atmosphereColor("#268bff")
-        .atmosphereAltitude(0.18)
-        .width(globeElement.clientWidth)
-        .height(globeElement.clientHeight)
-        .pointOfView({
-            lat:9.0820,
-            lng:8.6753,
-            altitude:2.5
-        });
+ globe=Globe()(element)
+  .globeImageUrl(
+   "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+  )
+  .bumpImageUrl(
+   "https://unpkg.com/three-globe/example/img/earth-topology.png"
+  )
+  .backgroundColor("#061426")
+  .showAtmosphere(true)
+  .atmosphereColor("#168cff")
+  .atmosphereAltitude(.18)
+  .pointOfView({
+   lat:9.082,
+   lng:8.6753,
+   altitude:2.5
+  });
 
-    globe.onGlobeClick(({lat,lng}) => {
+ globe.onGlobeClick(point=>{
 
-        selectedLat = lat;
-        selectedLng = lng;
+  latitude=point.lat;
+  longitude=point.lng;
 
-        selectedName = "Selected coordinates";
+  currentPlace="Selected location";
 
-        document.getElementById("coordinates").textContent =
-            `Latitude: ${lat.toFixed(5)} | Longitude: ${lng.toFixed(5)}`;
+  updateInfo();
 
-        document.getElementById("cardTitle").textContent =
-            "Selected Coordinates";
+  showSelectedCard();
 
-        document.getElementById("cardDetails").textContent =
-            `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  reverseGeocode(latitude,longitude);
 
-        document.getElementById("locationCard").classList.add("show");
+ });
 
-        reverseLocation(lat,lng);
-
-    });
-
-    window.addEventListener("resize",() => {
-
-        globe.width(globeElement.clientWidth);
-        globe.height(globeElement.clientHeight);
-
-    });
 }
 
-initializeGlobe();
+createGlobe();
+
+window.addEventListener("resize",()=>{
+
+ if(globe) {
+
+  const el=document.getElementById("globeViz");
+
+  globe.width(el.clientWidth);
+  globe.height(el.clientHeight);
+
+ }
+
+});
 
 /* =====================================
-   MAP INITIALIZATION
+   LEAFLET MAP
 ===================================== */
 
 function initializeMap() {
 
-    if(map) return;
+ if(map) return;
 
-    map = L.map("map",{
-        zoomControl:false,
-        worldCopyJump:true
-    }).setView([9.0820,8.6753],6);
+ map=L.map("map",{
+  zoomControl:false,
+  worldCopyJump:true
+ }).setView([9.082,8.6753],5);
 
-    const layers = {
+ const layers={
 
-        street: L.tileLayer(
-            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            {
-                maxZoom:19,
-                attribution:"© OpenStreetMap contributors"
-            }
-        ),
+  street:L.tileLayer(
+   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+   {
+    maxZoom:19,
+    attribution:"© OpenStreetMap"
+   }
+  ),
 
-        satellite: L.tileLayer(
-            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-            {
-                maxZoom:19,
-                attribution:"Tiles © Esri"
-            }
-        ),
+  satellite:L.tileLayer(
+   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+   {
+    maxZoom:19,
+    attribution:"© Esri"
+   }
+  ),
 
-        labels: L.tileLayer(
-            "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
-            {
-                maxZoom:20,
-                attribution:"© CARTO"
-            }
-        ),
+  labels:L.tileLayer(
+   "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
+   {
+    maxZoom:20,
+    attribution:"© CARTO"
+   }
+  ),
 
-        terrain: L.tileLayer(
-            "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-            {
-                maxZoom:17,
-                attribution:"© OpenTopoMap contributors"
-            }
-        )
+  terrain:L.tileLayer(
+   "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+   {
+    maxZoom:17,
+    attribution:"© OpenTopoMap"
+   }
+  )
 
-    };
+ };
 
-    window.mapLayers = layers;
+ window.layers=layers;
 
-    currentLayer = layers.street;
-    currentLayer.addTo(map);
+ currentLayer=layers.street;
+ currentLayer.addTo(map);
 
-    map.on("click",function(e) {
+ map.on("click",event=>{
 
-        selectedLat = e.latlng.lat;
-        selectedLng = e.latlng.lng;
+  latitude=event.latlng.lat;
+  longitude=event.latlng.lng;
 
-        selectedName = "Selected Map Location";
+  currentPlace="Selected location";
 
-        updateCoordinates();
+  addMarker(latitude,longitude,"Selected location");
 
-        reverseLocation(selectedLat,selectedLng);
+  updateInfo();
 
-    });
+  reverseGeocode(latitude,longitude);
+
+ });
 
 }
 
 initializeMap();
 
 /* =====================================
-   VIEW SWITCHING
+   SWITCH MAP / GLOBE
 ===================================== */
 
 function showGlobe() {
 
-    document.getElementById("globeContainer").style.display="flex";
-    document.getElementById("map").classList.remove("visible");
+ document.getElementById("globeContainer").style.display="flex";
+ document.getElementById("map").classList.remove("visible");
 
-    document.getElementById("coordinates").textContent =
-        "3D Earth view. Tap anywhere on the globe.";
+ if(globe) {
+  globe.pointOfView({
+   lat:latitude,
+   lng:longitude,
+   altitude:2
+  },800);
+ }
 
 }
 
 function showMap() {
 
-    document.getElementById("globeContainer").style.display="none";
-    document.getElementById("map").classList.add("visible");
+ document.getElementById("globeContainer").style.display="none";
+ document.getElementById("map").classList.add("visible");
 
-    setTimeout(() => {
-        map.invalidateSize();
-    },100);
-
-}
-
-function returnToGlobe() {
-    showGlobe();
-}
-
-function openSelectedInMap() {
-
-    showMap();
-
-    setTimeout(() => {
-
-        map.flyTo(
-            [selectedLat,selectedLng],
-            15,
-            {duration:2}
-        );
-
-        addMarker(selectedLat,selectedLng,selectedName);
-
-    },150);
+ setTimeout(()=>{
+  map.invalidateSize();
+ },150);
 
 }
 
@@ -1071,40 +1027,35 @@ function openSelectedInMap() {
    MAP LAYERS
 ===================================== */
 
-function changeLayer(type,button) {
+function setLayer(type,button) {
 
-    showMap();
+ showMap();
 
-    if(currentLayer) {
-        map.removeLayer(currentLayer);
-    }
+ if(currentLayer) {
+  map.removeLayer(currentLayer);
+ }
 
-    if(type==="hybrid") {
+ if(map.hasLayer(window.layers.labels)) {
+  map.removeLayer(window.layers.labels);
+ }
 
-        currentLayer=window.mapLayers.satellite;
-        currentLayer.addTo(map);
+ if(type==="hybrid") {
 
-        window.mapLayers.labels.addTo(map);
+  currentLayer=window.layers.satellite;
+  currentLayer.addTo(map);
+  window.layers.labels.addTo(map);
 
-    } else {
+ } else {
 
-        if(map.hasLayer(window.mapLayers.labels)) {
-            map.removeLayer(window.mapLayers.labels);
-        }
+  currentLayer=window.layers[type];
+  currentLayer.addTo(map);
 
-        currentLayer=window.mapLayers[type];
-        currentLayer.addTo(map);
+ }
 
-    }
+ document.querySelectorAll(".grid button")
+ .forEach(b=>b.classList.remove("active"));
 
-    currentMapLayer=type;
-
-    document.querySelectorAll(".grid-buttons button")
-    .forEach(btn=>btn.classList.remove("active"));
-
-    if(button) button.classList.add("active");
-
-    setTimeout(()=>map.invalidateSize(),100);
+ button.classList.add("active");
 
 }
 
@@ -1114,243 +1065,467 @@ function changeLayer(type,button) {
 
 async function geocode(query) {
 
-    const response=await fetch(
-        "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q="
-        +encodeURIComponent(query)
-    );
+ const url=
+  "https://photon.komoot.io/api/?limit=1&q="
+  +encodeURIComponent(query);
 
-    if(!response.ok) throw new Error("Search service unavailable");
+ const response=await fetch(url);
 
-    const data=await response.json();
+ if(!response.ok) {
+  throw new Error("Location search service unavailable.");
+ }
 
-    if(!data.length) throw new Error("Location not found");
+ const data=await response.json();
 
-    return data[0];
+ if(!data.features || !data.features.length) {
+  throw new Error("Location not found. Try another search.");
+ }
 
-}
+ const feature=data.features[0];
 
-async function searchLocation() {
-
-    const query=document.getElementById("locationInput").value.trim();
-
-    if(!query) return;
-
-    showLoading();
-
-    try {
-
-        const place=await geocode(query);
-
-        selectedLat=Number(place.lat);
-        selectedLng=Number(place.lon);
-        selectedName=place.display_name;
-
-        showMap();
-
-        setTimeout(()=>{
-
-            map.flyTo(
-                [selectedLat,selectedLng],
-                15,
-                {duration:2.2}
-            );
-
-            addMarker(selectedLat,selectedLng,selectedName);
-
-        },150);
-
-        document.getElementById("searchResult").classList.add("show");
-
-        document.getElementById("searchResult").innerHTML=
-            `<strong>Location found</strong><br>
-            ${escapeHTML(place.display_name)}<br>
-            Latitude: ${selectedLat.toFixed(5)}<br>
-            Longitude: ${selectedLng.toFixed(5)}`;
-
-        updateCoordinates();
-
-    } catch(error) {
-
-        alert(error.message);
-
-    }
-
-    hideLoading();
+ return {
+  lat:feature.geometry.coordinates[1],
+  lon:feature.geometry.coordinates[0],
+  name:formatPlace(feature.properties)
+ };
 
 }
 
-async function searchTopLocation() {
+function formatPlace(p) {
 
-    const query=document.getElementById("topSearch").value.trim();
-
-    document.getElementById("locationInput").value=query;
-
-    await searchLocation();
+ return [
+  p.name,
+  p.city,
+  p.state,
+  p.country
+ ].filter(Boolean).join(", ");
 
 }
 
-/* =====================================
-   REVERSE LOCATION SEARCH
-===================================== */
+async function searchPlace() {
 
-async function reverseLocation(lat,lng) {
+ const query=document.getElementById("placeInput").value.trim();
 
-    try {
+ if(!query) return;
 
-        const response=await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
-        );
+ loading(true);
 
-        const data=await response.json();
+ try {
 
-        selectedName=data.display_name || "Selected Location";
+  const place=await geocode(query);
 
-        document.getElementById("cardTitle").textContent=
-            selectedName.split(",")[0];
+  selectLocation(place.lat,place.lon,place.name);
 
-        document.getElementById("cardDetails").innerHTML=
-            `Latitude: ${lat.toFixed(5)}<br>
-             Longitude: ${lng.toFixed(5)}<br>
-             ${escapeHTML(selectedName)}`;
+  const box=document.getElementById("searchResult");
 
-        document.getElementById("locationCard").classList.add("show");
+  box.innerHTML=`
+   <strong>Location found</strong><br>
+   ${escapeHTML(place.name)}<br>
+   Latitude: ${place.lat.toFixed(5)}<br>
+   Longitude: ${place.lon.toFixed(5)}
+  `;
 
-        document.getElementById("coordinates").textContent=
-            selectedName.substring(0,100);
+  box.classList.add("show");
 
-    } catch(error) {
+ } catch(error) {
 
-        console.log(error);
+  alert(error.message);
 
-    }
+ }
+
+ loading(false);
+
+}
+
+function searchTop() {
+
+ const query=document.getElementById("topSearch").value.trim();
+
+ document.getElementById("placeInput").value=query;
+
+ searchPlace();
 
 }
 
 /* =====================================
-   MAP MARKERS
+   SELECT LOCATION
 ===================================== */
 
-let activeMarker=null;
+function selectLocation(lat,lon,name) {
 
-function addMarker(lat,lng,name) {
+ latitude=Number(lat);
+ longitude=Number(lon);
+ currentPlace=name || "Selected location";
 
-    if(activeMarker) {
-        map.removeLayer(activeMarker);
-    }
+ showMap();
 
-    activeMarker=L.marker([lat,lng])
-    .addTo(map)
-    .bindPopup(`<b>${escapeHTML(name)}</b>`)
-    .openPopup();
+ setTimeout(()=>{
 
-    document.getElementById("cardTitle").textContent=
-        name.split(",")[0];
+  map.flyTo([latitude,longitude],15,{
+   duration:2
+  });
 
-    document.getElementById("cardDetails").textContent=
-        `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  addMarker(latitude,longitude,currentPlace);
 
-    document.getElementById("locationCard").classList.add("show");
+  updateInfo();
+
+ },200);
+
+ showSelectedCard();
+
+ updateVideoLink();
+
+ loadPhotos();
 
 }
 
-function updateCoordinates() {
+function addMarker(lat,lon,name) {
 
-    document.getElementById("coordinates").textContent=
-        `Latitude: ${selectedLat.toFixed(5)} | Longitude: ${selectedLng.toFixed(5)}`;
+ if(marker) {
+  map.removeLayer(marker);
+ }
+
+ marker=L.marker([lat,lon])
+  .addTo(map)
+  .bindPopup(`<b>${escapeHTML(name)}</b>`)
+  .openPopup();
 
 }
 
 /* =====================================
-   GPS LOCATION
+   SELECTED LOCATION CARD
 ===================================== */
 
-function useMyLocation() {
+function showSelectedCard() {
 
-    if(!navigator.geolocation) {
+ document.getElementById("selectedCard").classList.add("show");
 
-        alert("GPS is not supported by this browser.");
-        return;
+ document.getElementById("selectedName").textContent=currentPlace;
 
-    }
+ document.getElementById("selectedDetails").innerHTML=
+  `Latitude: ${latitude.toFixed(5)}<br>
+   Longitude: ${longitude.toFixed(5)}`;
 
-    navigator.geolocation.getCurrentPosition(
+}
 
-        position=>{
+function openSelectedLocation() {
 
-            selectedLat=position.coords.latitude;
-            selectedLng=position.coords.longitude;
-            selectedName="My Current Location";
+ showMap();
 
-            showMap();
+ setTimeout(()=>{
 
-            setTimeout(()=>{
+  map.flyTo([latitude,longitude],16,{
+   duration:2
+  });
 
-                map.flyTo(
-                    [selectedLat,selectedLng],
-                    16,
-                    {duration:2}
-                );
+  addMarker(latitude,longitude,currentPlace);
 
-                addMarker(
-                    selectedLat,
-                    selectedLng,
-                    "My Current Location"
-                );
-
-                updateCoordinates();
-
-                reverseLocation(selectedLat,selectedLng);
-
-            },150);
-
-        },
-
-        error=>{
-
-            alert(
-                "Location permission was not granted or GPS is unavailable."
-            );
-
-        },
-
-        {
-            enableHighAccuracy:true,
-            timeout:15000
-        }
-
-    );
+ },150);
 
 }
 
 /* =====================================
-   ZOOM CONTROLS
+   REVERSE GEOCODING
 ===================================== */
 
-function zoomIn() {
+async function reverseGeocode(lat,lon) {
 
-    if(document.getElementById("map").classList.contains("visible")) {
-        map.zoomIn();
-    } else {
-        const pov=globe.pointOfView();
-        globe.pointOfView(
-            {...pov,altitude:Math.max(.2,pov.altitude*.75)},
-            500
-        );
-    }
+ try {
+
+  const response=await fetch(
+   `https://photon.komoot.io/reverse?lat=${lat}&lon=${lon}`
+  );
+
+  if(!response.ok) return;
+
+  const data=await response.json();
+
+  if(data.features && data.features.length) {
+
+   currentPlace=formatPlace(data.features[0].properties)
+    ||"Selected location";
+
+  }
+
+ } catch(error) {
+
+  console.log("Reverse lookup unavailable",error);
+
+ }
+
+ showSelectedCard();
+
+ updateVideoLink();
+
+ loadPhotos();
 
 }
 
-function zoomOut() {
+function updateInfo() {
 
-    if(document.getElementById("map").classList.contains("visible")) {
-        map.zoomOut();
-    } else {
-        const pov=globe.pointOfView();
-        globe.pointOfView(
-            {...pov,altitude:Math.min(5,pov.altitude*1.3)},
-            500
-        );
-    }
+ document.getElementById("coordinateInfo").textContent=
+  `${currentPlace} | ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+
+}
+
+/* =====================================
+   MY GPS LOCATION
+===================================== */
+
+function myLocation() {
+
+ if(!navigator.geolocation) {
+  alert("Your browser does not support GPS.");
+  return;
+ }
+
+ loading(true);
+
+ navigator.geolocation.getCurrentPosition(
+
+  position=>{
+
+   latitude=position.coords.latitude;
+   longitude=position.coords.longitude;
+
+   currentPlace="My Current Location";
+
+   selectLocation(latitude,longitude,currentPlace);
+
+   loading(false);
+
+  },
+
+  error=>{
+
+   loading(false);
+
+   alert("Location permission denied or GPS unavailable. Please allow location access.");
+
+  },
+
+  {
+   enableHighAccuracy:true,
+   timeout:15000
+  }
+
+ );
+
+}
+
+/* =====================================
+   PHOTOGRAPHS
+===================================== */
+
+async function loadPhotos() {
+
+ const box=document.getElementById("photoResult");
+
+ box.classList.add("show");
+
+ box.innerHTML="Searching for related photographs...";
+
+ const query=currentPlace.split(",")[0] || "World";
+
+ try {
+
+  const url=
+   "https://commons.wikimedia.org/w/api.php?action=query"
+   +"&generator=search"
+   +"&gsrsearch="+encodeURIComponent(query)
+   +"&gsrnamespace=6"
+   +"&gsrlimit=8"
+   +"&prop=imageinfo"
+   +"&iiprop=url"
+   +"&iiurlwidth=400"
+   +"&format=json"
+   +"&origin=*";
+
+  const response=await fetch(url);
+
+  if(!response.ok) {
+   throw new Error("Photo service unavailable.");
+  }
+
+  const data=await response.json();
+
+  const pages=data.query?.pages;
+
+  if(!pages) {
+   box.innerHTML="No related photographs were found.";
+   return;
+  }
+
+  let html='<div class="media-grid">';
+
+  Object.values(pages).forEach(page=>{
+
+   const info=page.imageinfo?.[0];
+
+   if(info && info.thumburl) {
+
+    html+=`
+     <a href="${escapeHTML(info.descriptionurl || info.thumburl)}"
+     target="_blank" rel="noopener">
+      <img src="${escapeHTML(info.thumburl)}"
+      loading="lazy"
+      alt="${escapeHTML(page.title)}">
+      ${escapeHTML(page.title.replace("File:",""))}
+     </a>
+    `;
+
+   }
+
+  });
+
+  html+="</div>";
+
+  box.innerHTML=html;
+
+ } catch(error) {
+
+  box.innerHTML="Could not load photographs. Check your internet connection.";
+
+ }
+
+}
+
+/* =====================================
+   LOCATION VIDEOS
+===================================== */
+
+function updateVideoLink() {
+
+ const query=currentPlace+" location tour";
+
+ const url=
+  "https://www.youtube.com/results?search_query="
+  +encodeURIComponent(query);
+
+ document.getElementById("videoLink").href=url;
+
+ document.getElementById("videoResult").innerHTML=`
+  <strong>Location video search</strong><br>
+  Find videos about ${escapeHTML(currentPlace)}.
+  <br><br>
+  Tap the button below to view available videos.
+ `;
+
+}
+
+document.getElementById("videoLink").addEventListener("click",function(){
+
+ document.getElementById("videoResult").classList.add("show");
+
+});
+
+/* =====================================
+   ROUTE PLANNER
+===================================== */
+
+async function calculateRoute() {
+
+ const start=document.getElementById("routeStart").value.trim();
+
+ const end=document.getElementById("routeEnd").value.trim();
+
+ const mode=document.getElementById("routeMode").value;
+
+ const box=document.getElementById("routeResult");
+
+ if(!start || !end) {
+  alert("Enter the starting location and destination.");
+  return;
+ }
+
+ loading(true);
+
+ try {
+
+  const a=await geocode(start);
+  const b=await geocode(end);
+
+  if(mode!=="driving") {
+
+   const travelMode=mode==="walking"?"walking":"bicycling";
+
+   const url=
+    "https://www.google.com/maps/dir/?api=1"
+    +"&origin="+encodeURIComponent(start)
+    +"&destination="+encodeURIComponent(end)
+    +"&travelmode="+travelMode;
+
+   window.open(url,"_blank");
+
+   box.innerHTML=
+    "<strong>Directions opened</strong><br>Google Maps is showing your requested route.";
+
+   box.classList.add("show");
+
+   loading(false);
+   return;
+
+  }
+
+  const url=
+   `https://router.project-osrm.org/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=full&geometries=geojson`;
+
+  const response=await fetch(url);
+
+  if(!response.ok) {
+   throw new Error("Route service unavailable.");
+  }
+
+  const data=await response.json();
+
+  if(data.code!=="Ok" || !data.routes.length) {
+   throw new Error("No driving route found.");
+  }
+
+  const route=data.routes[0];
+
+  const points=route.geometry.coordinates.map(p=>[p[1],p[0]]);
+
+  showMap();
+
+  setTimeout(()=>{
+
+   if(routeLine) {
+    map.removeLayer(routeLine);
+   }
+
+   routeLine=L.polyline(points,{
+    color:"#168cff",
+    weight:6,
+    opacity:.9
+   }).addTo(map);
+
+   map.fitBounds(routeLine.getBounds(),{
+    padding:[50,50]
+   });
+
+  },200);
+
+  box.innerHTML=`
+   <strong>Driving route found</strong><br>
+   From: ${escapeHTML(start)}<br>
+   To: ${escapeHTML(end)}<br>
+   Distance: ${(route.distance/1000).toFixed(2)} km<br>
+   Estimated time: ${(route.duration/60).toFixed(0)} minutes
+  `;
+
+  box.classList.add("show");
+
+ } catch(error) {
+
+  box.innerHTML=
+   `<strong>Route error</strong><br>${escapeHTML(error.message)}`;
+
+  box.classList.add("show");
+
+ }
+
+ loading(false);
 
 }
 
@@ -1358,195 +1533,66 @@ function zoomOut() {
    PHONE NUMBER INFORMATION
 ===================================== */
 
-function lookupPhone() {
+function checkPhone() {
 
-    const input=document.getElementById("phoneInput").value.trim();
+ const input=document.getElementById("phoneInput").value.trim();
 
-    const result=document.getElementById("phoneResult");
+ const box=document.getElementById("phoneResult");
 
-    if(!input) {
-        alert("Enter a phone number.");
-        return;
-    }
+ if(!input) {
+  alert("Enter a phone number.");
+  return;
+ }
 
-    try {
+ const cleaned=input.replace(/[\s()-]/g,"");
 
-        const number=libphonenumber.parsePhoneNumber(input);
+ if(!/^\+?[0-9]{7,15}$/.test(cleaned)) {
 
-        if(!number || !number.isValid()) {
-            throw new Error("Invalid phone number.");
-        }
+  box.innerHTML="Please enter a valid international phone number.";
+  box.classList.add("show");
+  return;
 
-        const country=number.country || "Not identified";
-        const callingCode="+"+number.countryCallingCode;
-        const numberType=number.getType() || "Not specified";
+ }
 
-        let typeDescription=numberType;
+ let country="Could not determine country";
+ let code="Not determined";
 
-        if(numberType==="MOBILE") {
-            typeDescription="Mobile phone number";
-        }
+ if(cleaned.startsWith("+234")) {
+  country="Nigeria";
+  code="+234";
+ } else if(cleaned.startsWith("+1")) {
+  country="United States / Canada and other NANP regions";
+  code="+1";
+ } else if(cleaned.startsWith("+44")) {
+  country="United Kingdom";
+  code="+44";
+ } else if(cleaned.startsWith("+233")) {
+  country="Ghana";
+  code="+233";
+ } else if(cleaned.startsWith("+27")) {
+  country="South Africa";
+  code="+27";
+ } else if(cleaned.startsWith("+254")) {
+  country="Kenya";
+  code="+254";
+ } else if(cleaned.startsWith("+91")) {
+  country="India";
+  code="+91";
+ }
 
-        if(numberType==="FIXED_LINE") {
-            typeDescription="Fixed telephone number";
-        }
+ box.innerHTML=`
+  <strong>Phone Number Information</strong><br>
+  Number: ${escapeHTML(cleaned)}<br>
+  Country: ${escapeHTML(country)}<br>
+  Calling code: ${escapeHTML(code)}<br>
+  <br>
+  <strong>Current state:</strong> Cannot be determined.<br>
+  <strong>Current area:</strong> Cannot be determined.<br>
+  <br>
+  A phone number does not reveal the phone's live position.
+ `;
 
-        let extra="";
-
-        if(country==="NG") {
-
-            extra=`
-            <div class="divider"></div>
-            <strong>Nigeria information</strong><br>
-            Country: Nigeria<br>
-            International calling code: +234<br>
-            <br>
-            <strong>State / current area:</strong><br>
-            Not available from a Nigerian mobile number.<br>
-            <br>
-            Mobile numbers are not reliable indicators of a
-            person's present state or neighbourhood.
-            `;
-
-        }
-
-        result.innerHTML=`
-            <strong>Number Information</strong><br>
-            International format: ${escapeHTML(number.formatInternational())}<br>
-            Country: ${escapeHTML(country)}<br>
-            Calling code: ${escapeHTML(callingCode)}<br>
-            Number type: ${escapeHTML(typeDescription)}<br>
-            Valid number: Yes
-            ${extra}
-            <div class="divider"></div>
-            <span class="small-text">
-            This is numbering information, not a live phone location.
-            </span>
-        `;
-
-        result.classList.add("show");
-
-    } catch(error) {
-
-        result.innerHTML=
-            `<strong>Number not recognised</strong><br>
-            Enter a valid international phone number, including its country code.`;
-
-        result.classList.add("show");
-
-    }
-
-}
-
-/* =====================================
-   ROUTE PLANNING
-===================================== */
-
-async function calculateRoute() {
-
-    const start=document.getElementById("startPoint").value.trim();
-    const end=document.getElementById("endPoint").value.trim();
-    const mode=document.getElementById("travelMode").value;
-
-    const result=document.getElementById("routeResult");
-
-    if(!start || !end) {
-        alert("Enter both starting location and destination.");
-        return;
-    }
-
-    if(ORS_API_KEY==="YOUR_OPENROUTESERVICE_API_KEY") {
-
-        result.innerHTML=`
-            <strong>API key required</strong><br>
-            To activate route calculation, create an API key from
-            OpenRouteService and replace the placeholder in the code.
-        `;
-
-        result.classList.add("show");
-        return;
-
-    }
-
-    showLoading();
-
-    try {
-
-        const startPlace=await geocode(start);
-        const endPlace=await geocode(end);
-
-        const startCoords=[
-            Number(startPlace.lon),
-            Number(startPlace.lat)
-        ];
-
-        const endCoords=[
-            Number(endPlace.lon),
-            Number(endPlace.lat)
-        ];
-
-        const response=await fetch(
-            `https://api.openrouteservice.org/v2/directions/${mode}/geojson`,
-            {
-                method:"POST",
-                headers:{
-                    "Authorization":ORS_API_KEY,
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    coordinates:[startCoords,endCoords]
-                })
-            }
-        );
-
-        if(!response.ok) {
-            throw new Error("Route service could not calculate this route.");
-        }
-
-        const data=await response.json();
-
-        const coordinates=data.features[0].geometry.coordinates;
-
-        const latlngs=coordinates.map(point=>[point[1],point[0]]);
-
-        showMap();
-
-        setTimeout(()=>{
-
-            if(routeLayer) map.removeLayer(routeLayer);
-
-            routeLayer=L.polyline(latlngs,{
-                color:"#168cff",
-                weight:6,
-                opacity:.9
-            }).addTo(map);
-
-            map.fitBounds(routeLayer.getBounds(),{
-                padding:[50,50]
-            });
-
-            const summary=data.features[0].properties.summary;
-
-            result.innerHTML=`
-                <strong>Route calculated</strong><br>
-                Distance: ${(summary.distance/1000).toFixed(2)} km<br>
-                Estimated duration: ${(summary.duration/60).toFixed(0)} minutes
-            `;
-
-            result.classList.add("show");
-
-        },200);
-
-    } catch(error) {
-
-        result.innerHTML=
-            `<strong>Route error</strong><br>${escapeHTML(error.message)}`;
-
-        result.classList.add("show");
-
-    }
-
-    hideLoading();
+ box.classList.add("show");
 
 }
 
@@ -1554,155 +1600,89 @@ async function calculateRoute() {
    LOCATION SHARING
 ===================================== */
 
-function shareMyLocation() {
+function shareLocation() {
 
-    if(!navigator.geolocation) {
-        alert("GPS is unavailable.");
-        return;
-    }
+ if(!navigator.geolocation) {
+  alert("GPS unavailable.");
+  return;
+ }
 
-    navigator.geolocation.getCurrentPosition(async position=>{
+ navigator.geolocation.getCurrentPosition(async position=>{
 
-        const lat=position.coords.latitude;
-        const lng=position.coords.longitude;
+  const lat=position.coords.latitude;
+  const lon=position.coords.longitude;
 
-        const link=`https://www.google.com/maps?q=${lat},${lng}`;
+  const url=`https://www.google.com/maps?q=${lat},${lon}`;
 
-        try {
+  try {
 
-            await navigator.clipboard.writeText(link);
+   await navigator.clipboard.writeText(url);
 
-            alert("Your location link has been copied. You can now share it.");
+   alert("Your location link has been copied. Share it with someone you trust.");
 
-        } catch(error) {
+  } catch(error) {
 
-            prompt("Copy your location link:",link);
+   prompt("Copy your location link:",url);
 
-        }
+  }
 
-    },()=>{
+ },()=>{
 
-        alert("Location permission is required.");
+  alert("Please allow location access.");
 
-    });
-
-}
-
-/* =====================================
-   RELATED PHOTOS
-===================================== */
-
-async function findPhotos() {
-
-    const result=document.getElementById("photoResult");
-
-    result.classList.add("show");
-
-    result.innerHTML="Searching for related photographs...";
-
-    try {
-
-        const query=encodeURIComponent(selectedName.split(",")[0]);
-
-        const response=await fetch(
-            `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${query}&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url&iiurlwidth=350&format=json&origin=*`
-        );
-
-        const data=await response.json();
-
-        const pages=data.query?.pages;
-
-        if(!pages) {
-            result.innerHTML="No related photographs found.";
-            return;
-        }
-
-        let html="";
-
-        Object.values(pages).forEach(page=>{
-
-            const image=page.imageinfo?.[0]?.thumburl;
-
-            if(image) {
-
-                html+=`
-                <div style="margin-bottom:12px">
-                    <img src="${image}"
-                    style="width:100%;border-radius:8px"
-                    loading="lazy">
-                    <div class="small-text">
-                    ${escapeHTML(page.title)}
-                    </div>
-                </div>`;
-
-            }
-
-        });
-
-        result.innerHTML=html || "No photographs found.";
-
-    } catch(error) {
-
-        result.innerHTML="Photo service is currently unavailable.";
-
-    }
+ });
 
 }
 
 /* =====================================
-   STREET VIEW
+   ZOOM
 ===================================== */
 
-function openStreetView() {
+function zoomIn() {
 
-    const url=
-        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${selectedLat},${selectedLng}`;
+ if(document.getElementById("map").classList.contains("visible")) {
 
-    window.open(url,"_blank");
+  map.zoomIn();
+
+ } else if(globe) {
+
+  const view=globe.pointOfView();
+
+  globe.pointOfView({
+   ...view,
+   altitude:Math.max(.2,view.altitude*.75)
+  },500);
+
+ }
+
+}
+
+function zoomOut() {
+
+ if(document.getElementById("map").classList.contains("visible")) {
+
+  map.zoomOut();
+
+ } else if(globe) {
+
+  const view=globe.pointOfView();
+
+  globe.pointOfView({
+   ...view,
+   altitude:Math.min(5,view.altitude*1.3)
+  },500);
+
+ }
 
 }
 
 /* =====================================
-   HTML SAFETY
+   INITIAL VIEW
 ===================================== */
 
-function escapeHTML(value) {
+updateInfo();
 
-    return String(value).replace(/[&<>"']/g,function(character) {
-
-        return {
-            "&":"&amp;",
-            "<":"&lt;",
-            ">":"&gt;",
-            '"':"&quot;",
-            "'":"&#039;"
-        }[character];
-
-    });
-
-}
-
-/* =====================================
-   INITIAL SETTINGS
-===================================== */
-
-window.addEventListener("load",()=>{
-
-    setTimeout(()=>{
-
-        if(globe) {
-
-            globe.pointOfView({
-                lat:9.0820,
-                lng:8.6753,
-                altitude:2.5
-            },1000);
-
-        }
-
-    },500);
-
-});
+updateVideoLink();
 
 </script>
 
