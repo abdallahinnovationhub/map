@@ -4,16 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#071426">
+<title>Globe Explorer | World Mapping Platform</title>
 
-<title>Globe Explorer | Professional Mapping Platform</title>
+<!-- Leaflet map -->
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<!-- Icons -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<!-- 3D Globe -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://unpkg.com/globe.gl"></script>
 
+<!-- Phone number information -->
 <script src="https://unpkg.com/libphonenumber-js@1.11.20/bundle/libphonenumber-max.js"></script>
 
 <style>
+:root {
+    --bg:#071426;
+    --panel:#0d2038;
+    --panel2:#102944;
+    --blue:#168cff;
+    --gold:#e8b84c;
+    --text:#f4f8ff;
+    --muted:#9bb0c8;
+    --border:rgba(255,255,255,.1);
+}
 
 * {
     margin:0;
@@ -21,270 +39,179 @@
     box-sizing:border-box;
 }
 
-:root {
-    --primary:#087cf0;
-    --gold:#f5c451;
-    --dark:#071426;
-    --panel:#0c203b;
-    --light:#ffffff;
-}
-
 body {
-    font-family:Arial,sans-serif;
-    background:var(--dark);
-    color:white;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial, sans-serif;
     overflow:hidden;
 }
 
 button,input,select {
-    font-family:inherit;
+    font:inherit;
 }
 
 button {
     cursor:pointer;
 }
 
-#app {
-    width:100%;
+/* MAIN APPLICATION */
+
+.app {
     height:100dvh;
-    position:relative;
-    background:
-    radial-gradient(circle at top right,#174b79,#071426 65%);
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
 }
 
 /* HEADER */
 
 header {
     height:65px;
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    z-index:1000;
+    min-height:65px;
+    background:#08182b;
+    border-bottom:1px solid var(--border);
     display:flex;
     align-items:center;
     justify-content:space-between;
     padding:0 18px;
-    background:rgba(5,19,38,.97);
-    border-bottom:1px solid #ffffff20;
+    z-index:1000;
 }
 
 .brand {
     display:flex;
     align-items:center;
-    gap:10px;
-    font-size:19px;
+    gap:11px;
+    font-size:18px;
     font-weight:bold;
+}
+
+.brand-icon {
+    width:39px;
+    height:39px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    color:white;
+    background:linear-gradient(135deg,#168cff,#064b9b);
+    font-size:19px;
+}
+
+.brand span {
     color:var(--gold);
 }
 
-.brand i {
-    color:#168cff;
-    font-size:25px;
-}
-
-.header-tools {
+.header-right {
     display:flex;
-    gap:15px;
+    gap:9px;
     align-items:center;
 }
 
-.header-tools button {
-    background:none;
-    border:none;
+.header-btn {
+    border:1px solid var(--border);
+    background:#122b46;
     color:white;
-    font-size:19px;
+    border-radius:9px;
+    padding:10px 13px;
 }
 
-.live-indicator {
-    color:#41e5a0;
+.header-btn:hover {
+    background:#1b4168;
+}
+
+.status {
     font-size:11px;
+    color:#6ee7a5;
 }
 
-/* MAP */
+/* MAIN CONTENT */
 
-#map {
-    position:absolute;
-    top:65px;
-    left:0;
-    right:0;
-    bottom:0;
-    z-index:1;
-}
-
-/* SEARCH */
-
-.search-area {
-    position:absolute;
-    z-index:500;
-    top:80px;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(580px,95%);
-}
-
-.search-box {
-    display:flex;
-    overflow:hidden;
-    background:white;
-    border-radius:13px;
-    box-shadow:0 5px 30px #0006;
-}
-
-.search-box input {
+.main {
     flex:1;
-    min-width:0;
-    padding:16px;
-    border:none;
-    outline:none;
-    color:#13243b;
-    font-size:14px;
+    min-height:0;
+    position:relative;
+    display:flex;
 }
 
-.search-box button {
-    background:var(--primary);
-    color:white;
-    border:none;
-    padding:0 22px;
-    font-size:18px;
-}
-
-.suggestions {
-    display:none;
-    background:white;
-    color:#17283e;
-    border-radius:10px;
-    margin-top:5px;
-    overflow:hidden;
-}
-
-.suggestion {
-    padding:12px;
-    border-bottom:1px solid #ddd;
-    font-size:13px;
-    cursor:pointer;
-}
-
-.suggestion:hover {
-    background:#eaf3ff;
-}
-
-/* SIDE MENU */
+/* SIDEBAR */
 
 .sidebar {
-    position:absolute;
-    z-index:400;
-    left:12px;
-    top:145px;
-    bottom:15px;
-    width:255px;
+    width:350px;
+    min-width:350px;
+    height:100%;
+    background:rgba(8,24,43,.98);
+    border-right:1px solid var(--border);
     overflow-y:auto;
-    padding:15px;
-    background:rgba(7,23,44,.95);
-    border:1px solid #ffffff20;
-    border-radius:16px;
-    backdrop-filter:blur(16px);
-    box-shadow:0 8px 30px #0005;
+    padding:17px;
+    z-index:500;
+    transition:transform .3s ease, width .3s ease;
+}
+
+.sidebar.hidden {
+    width:0;
+    min-width:0;
+    padding:0;
+    overflow:hidden;
+    border:none;
 }
 
 .sidebar::-webkit-scrollbar {
-    width:4px;
+    width:5px;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background:#247dc4;
+    background:#29496b;
+    border-radius:10px;
 }
 
-.menu-title {
-    color:var(--gold);
-    font-size:13px;
-    margin:8px 0 13px;
-    letter-spacing:1px;
-}
-
-.menu-btn {
-    width:100%;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:13px 11px;
-    margin-bottom:7px;
-    background:#ffffff0b;
-    color:white;
-    border:1px solid #ffffff12;
-    border-radius:9px;
-    text-align:left;
-    font-size:13px;
-    transition:.2s;
-}
-
-.menu-btn i {
-    width:20px;
-    color:#50aaff;
-    font-size:16px;
-}
-
-.menu-btn:hover,
-.menu-btn.active {
-    background:#087cf0;
-}
-
-.menu-btn:hover i,
-.menu-btn.active i {
-    color:white;
-}
-
-.divider {
-    height:1px;
-    background:#ffffff20;
-    margin:15px 0;
-}
-
-/* RIGHT PANEL */
-
-.right-panel {
-    position:absolute;
-    z-index:450;
-    right:12px;
-    top:145px;
-    bottom:15px;
-    width:290px;
-    overflow-y:auto;
-    padding:16px;
-    background:rgba(7,23,44,.96);
-    border:1px solid #ffffff20;
-    border-radius:16px;
-    backdrop-filter:blur(15px);
-    display:none;
-}
-
-.right-panel h3 {
-    color:var(--gold);
+.section {
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:15px;
     margin-bottom:13px;
-    font-size:16px;
 }
 
-.close-btn {
-    float:right;
-    background:none;
-    border:none;
+.section-title {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:13px;
+    font-weight:bold;
+    font-size:14px;
+}
+
+.section-title i {
+    color:var(--gold);
+    margin-right:7px;
+}
+
+input,select {
+    width:100%;
+    padding:12px;
+    border-radius:9px;
+    border:1px solid #294663;
+    outline:none;
+    background:#071a2e;
     color:white;
-    font-size:22px;
+    margin-bottom:9px;
 }
 
-.panel-text {
-    font-size:13px;
-    line-height:1.8;
+input:focus,select:focus {
+    border-color:var(--blue);
+}
+
+input::placeholder {
+    color:#7890aa;
 }
 
 .primary-btn {
     width:100%;
-    padding:13px;
-    background:linear-gradient(135deg,#087cf0,#0054a8);
-    color:white;
-    border:none;
+    padding:12px;
+    border:0;
     border-radius:9px;
-    margin-top:9px;
+    background:linear-gradient(120deg,#168cff,#0755a7);
+    color:white;
     font-weight:bold;
 }
 
@@ -292,687 +219,1098 @@ header {
     filter:brightness(1.15);
 }
 
-.input-field {
+.secondary-btn {
     width:100%;
-    padding:13px;
-    border:none;
-    border-radius:8px;
-    margin:7px 0;
-    outline:none;
-    color:#17283e;
-    background:white;
+    padding:11px;
+    border:1px solid #315371;
+    background:#15304d;
+    color:white;
+    border-radius:9px;
+    margin-top:7px;
 }
 
-/* PHOTO GRID */
-
-.photo-grid {
+.grid-buttons {
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
-    margin-top:12px;
 }
 
-.photo-grid img {
-    width:100%;
-    height:105px;
-    object-fit:cover;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-/* ROUTE PANEL */
-
-.route-panel {
-    position:absolute;
-    z-index:600;
-    top:145px;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(390px,94%);
-    max-height:70vh;
-    overflow-y:auto;
-    padding:17px;
-    background:rgba(7,23,44,.97);
-    border:1px solid #ffffff25;
-    border-radius:15px;
-    display:none;
-}
-
-.route-panel h3 {
-    color:var(--gold);
-    margin-bottom:13px;
-}
-
-.route-result {
-    background:#ffffff10;
-    padding:13px;
+.grid-buttons button {
+    padding:11px 7px;
+    border:1px solid #294663;
     border-radius:9px;
-    margin-top:12px;
-    font-size:13px;
-    line-height:2;
+    color:white;
+    background:#102b47;
+    font-size:12px;
 }
 
-/* PHONE PANEL */
+.grid-buttons button.active {
+    border-color:var(--blue);
+    background:#124477;
+}
 
-.phone-panel {
-    position:absolute;
-    z-index:650;
-    top:145px;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(370px,94%);
-    padding:18px;
-    background:rgba(7,23,44,.98);
-    border:1px solid #ffffff25;
-    border-radius:15px;
+.small-text {
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+    margin-top:8px;
+}
+
+.result-box {
+    display:none;
+    margin-top:12px;
+    padding:12px;
+    background:#071a2e;
+    border:1px solid var(--border);
+    border-radius:10px;
+    font-size:12px;
+    line-height:1.7;
+    overflow-wrap:anywhere;
+}
+
+.result-box.show {
+    display:block;
+}
+
+.result-box strong {
+    color:var(--gold);
+}
+
+.divider {
+    height:1px;
+    background:var(--border);
+    margin:12px 0;
+}
+
+/* MAP AREA */
+
+.map-area {
+    flex:1;
+    position:relative;
+    min-width:0;
+    overflow:hidden;
+    background:#020b18;
+}
+
+#map {
+    height:100%;
+    width:100%;
     display:none;
 }
 
-.phone-panel h3 {
+#map.visible {
+    display:block;
+}
+
+#globeContainer {
+    width:100%;
+    height:100%;
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+      radial-gradient(ellipse at center,#102b48 0%,#06172b 55%,#020b18 100%);
+}
+
+#globeViz {
+    width:100%;
+    height:100%;
+}
+
+#globeViz canvas {
+    max-width:100%;
+    max-height:100%;
+}
+
+/* MAP TOP SEARCH */
+
+.map-search {
+    position:absolute;
+    top:17px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(520px,75%);
+    display:flex;
+    gap:7px;
+    z-index:400;
+}
+
+.map-search input {
+    margin:0;
+    background:rgba(7,22,40,.94);
+    box-shadow:0 8px 30px #0005;
+}
+
+.map-search button {
+    width:48px;
+    flex-shrink:0;
+    border:0;
+    border-radius:9px;
+    color:white;
+    background:var(--blue);
+}
+
+/* HIDE PANEL BUTTON */
+
+.toggle-sidebar {
+    position:absolute;
+    top:17px;
+    left:12px;
+    z-index:600;
+    background:#102b47;
+    color:white;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    box-shadow:0 5px 20px #0005;
+}
+
+.sidebar.hidden ~ .map-area .toggle-sidebar {
+    left:12px;
+}
+
+/* MAP CONTROLS */
+
+.map-controls {
+    position:absolute;
+    right:15px;
+    top:85px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    z-index:400;
+}
+
+.map-control {
+    width:43px;
+    height:43px;
+    border-radius:11px;
+    border:1px solid var(--border);
+    color:white;
+    background:rgba(8,24,43,.94);
+    font-size:16px;
+}
+
+.map-control:hover {
+    background:#15538b;
+}
+
+/* BOTTOM INFORMATION */
+
+.bottom-info {
+    position:absolute;
+    bottom:15px;
+    left:15px;
+    z-index:400;
+    background:rgba(7,22,40,.93);
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:11px 14px;
+    font-size:11px;
+    color:#c6d7e9;
+    max-width:80%;
+}
+
+.bottom-info strong {
     color:var(--gold);
-    margin-bottom:13px;
+}
+
+/* FLOATING LOCATION CARD */
+
+.location-card {
+    position:absolute;
+    bottom:15px;
+    right:15px;
+    z-index:400;
+    background:rgba(8,24,43,.95);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:13px;
+    max-width:230px;
+    display:none;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.location-card.show {
+    display:block;
+}
+
+.location-card button {
+    border:0;
+    color:white;
+    background:var(--blue);
+    border-radius:7px;
+    padding:8px 10px;
+    margin-top:7px;
 }
 
 /* LOADING */
 
 .loading {
     position:absolute;
-    z-index:1200;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    background:#071426;
-    padding:20px;
-    border-radius:12px;
+    inset:0;
     display:none;
+    place-items:center;
+    z-index:900;
+    background:#061426a8;
+    font-size:14px;
+}
+
+.loading.show {
+    display:grid;
+}
+
+.loading-box {
+    background:#102b47;
+    padding:20px 25px;
+    border-radius:13px;
     text-align:center;
 }
 
 .loading i {
-    color:#168cff;
-    font-size:28px;
+    font-size:25px;
+    color:var(--gold);
     margin-bottom:10px;
+}
+
+/* FOOTER */
+
+footer {
+    min-height:30px;
+    background:#061426;
+    border-top:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#8198b1;
+    font-size:10px;
+    padding:5px;
+}
+
+/* LEAFLET */
+
+.leaflet-control-attribution {
+    font-size:9px !important;
+}
+
+.leaflet-popup-content-wrapper {
+    background:#0c2037;
+    color:white;
+    border-radius:10px;
+}
+
+.leaflet-popup-tip {
+    background:#0c2037;
 }
 
 /* MOBILE */
 
-@media(max-width:700px) {
-
+@media(max-width:750px) {
     header {
         height:58px;
-        padding:0 11px;
+        min-height:58px;
+        padding:0 10px;
     }
 
     .brand {
-        font-size:15px;
-    }
-
-    .brand i {
-        font-size:21px;
-    }
-
-    #map {
-        top:58px;
-    }
-
-    .search-area {
-        top:70px;
-        width:96%;
-    }
-
-    .search-box input {
-        padding:14px 10px;
-        font-size:13px;
-    }
-
-    .sidebar {
-        left:6px;
-        top:125px;
-        bottom:10px;
-        width:185px;
-        padding:9px;
-    }
-
-    .menu-btn {
-        padding:12px 7px;
-        font-size:11px;
-        gap:8px;
-    }
-
-    .menu-btn i {
         font-size:14px;
-        width:17px;
     }
 
-    .menu-title {
-        font-size:11px;
+    .brand-icon {
+        width:34px;
+        height:34px;
     }
 
-    .right-panel {
-        right:6px;
-        top:125px;
-        bottom:10px;
-        width:185px;
-        padding:10px;
+    .status {
+        display:none;
     }
-
-    .right-panel h3 {
-        font-size:13px;
-    }
-
-    .panel-text {
-        font-size:11px;
-    }
-
-    .primary-btn {
-        padding:11px 5px;
-        font-size:11px;
-    }
-
-    .route-panel,
-    .phone-panel {
-        top:125px;
-    }
-
-}
-
-@media(max-width:380px) {
 
     .sidebar {
-        width:165px;
+        position:absolute;
+        left:0;
+        top:0;
+        bottom:0;
+        width:min(330px,88vw);
+        min-width:0;
+        box-shadow:10px 0 30px #0006;
     }
 
-    .right-panel {
-        width:165px;
+    .sidebar.hidden {
+        transform:translateX(-105%);
+        width:min(330px,88vw);
+        min-width:0;
     }
 
-    .brand {
-        font-size:13px;
+    .map-search {
+        top:72px;
+        width:calc(100% - 100px);
+        left:auto;
+        right:10px;
+        transform:none;
     }
 
+    .map-search input {
+        padding:11px 9px;
+        font-size:12px;
+    }
+
+    .toggle-sidebar {
+        top:72px;
+        left:10px;
+        padding:11px 12px;
+    }
+
+    .map-controls {
+        top:130px;
+        right:10px;
+    }
+
+    .map-control {
+        width:39px;
+        height:39px;
+    }
+
+    .bottom-info {
+        bottom:10px;
+        left:10px;
+        font-size:10px;
+    }
+
+    .location-card {
+        bottom:10px;
+        right:10px;
+        max-width:180px;
+    }
 }
-
 </style>
 </head>
 
 <body>
 
-<div id="app">
+<div class="app">
 
 <header>
-
     <div class="brand">
-        <i class="fa-solid fa-earth-africa"></i>
-        GLOBE EXPLORER
+        <div class="brand-icon">
+            <i class="fa-solid fa-earth-africa"></i>
+        </div>
+        GLOBE <span>EXPLORER</span>
     </div>
 
-    <div class="header-tools">
-
-        <span class="live-indicator">
-            <i class="fa-solid fa-circle"></i> ONLINE
+    <div class="header-right">
+        <span class="status">
+            <i class="fa-solid fa-circle"></i> SYSTEM ONLINE
         </span>
 
-        <button onclick="worldView()">
-            <i class="fa-solid fa-globe"></i>
+        <button class="header-btn" onclick="showGlobe()">
+            <i class="fa-solid fa-earth-americas"></i>
+            <span class="desktop-label"> Globe</span>
         </button>
 
+        <button class="header-btn" onclick="showMap()">
+            <i class="fa-solid fa-map"></i>
+            <span class="desktop-label"> Map</span>
+        </button>
     </div>
-
 </header>
 
-
-<div id="map"></div>
-
-
-<!-- SEARCH -->
-
-<div class="search-area">
-
-    <div class="search-box">
-
-        <input
-        id="searchInput"
-        type="search"
-        placeholder="Search anywhere in the world..."
-        autocomplete="off">
-
-        <button onclick="searchPlace()">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-
-    </div>
-
-    <div class="suggestions" id="suggestions"></div>
-
-</div>
-
+<div class="main">
 
 <!-- SIDEBAR -->
 
-<div class="sidebar">
+<aside class="sidebar" id="sidebar">
 
-    <div class="menu-title">
-        <i class="fa-solid fa-layer-group"></i>
-        MAP LAYERS
+    <div class="section">
+        <div class="section-title">
+            <span><i class="fa-solid fa-magnifying-glass"></i> Location Search</span>
+        </div>
+
+        <input id="locationInput"
+        placeholder="Search any city, country or place..."
+        onkeydown="if(event.key==='Enter') searchLocation()">
+
+        <button class="primary-btn" onclick="searchLocation()">
+            <i class="fa-solid fa-search"></i> Explore Location
+        </button>
+
+        <button class="secondary-btn" onclick="useMyLocation()">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            Find My Location
+        </button>
+
+        <div id="searchResult" class="result-box"></div>
     </div>
 
-    <button class="menu-btn active" onclick="setLayer('street',this)">
-        <i class="fa-solid fa-map"></i>
-        Standard Map
-    </button>
+    <div class="section">
+        <div class="section-title">
+            <span><i class="fa-solid fa-layer-group"></i> Map Appearance</span>
+        </div>
 
-    <button class="menu-btn" onclick="setLayer('satellite',this)">
-        <i class="fa-solid fa-satellite"></i>
-        Satellite View
-    </button>
+        <div class="grid-buttons">
+            <button class="active" onclick="changeLayer('street',this)">
+                <i class="fa-solid fa-map"></i><br>Standard
+            </button>
 
-    <button class="menu-btn" onclick="setLayer('hybrid',this)">
-        <i class="fa-solid fa-earth-americas"></i>
-        Hybrid Satellite
-    </button>
+            <button onclick="changeLayer('satellite',this)">
+                <i class="fa-solid fa-satellite"></i><br>Satellite
+            </button>
 
-    <button class="menu-btn" onclick="setLayer('terrain',this)">
-        <i class="fa-solid fa-mountain"></i>
-        Terrain Map
-    </button>
+            <button onclick="changeLayer('hybrid',this)">
+                <i class="fa-solid fa-earth-americas"></i><br>Hybrid
+            </button>
 
-    <div class="divider"></div>
+            <button onclick="changeLayer('terrain',this)">
+                <i class="fa-solid fa-mountain"></i><br>Terrain
+            </button>
+        </div>
 
-    <div class="menu-title">LOCATION SERVICES</div>
-
-    <button class="menu-btn" onclick="findMe()">
-        <i class="fa-solid fa-location-crosshairs"></i>
-        Find My Location
-    </button>
-
-    <button class="menu-btn" onclick="showLocationPanel()">
-        <i class="fa-solid fa-map-pin"></i>
-        Location Details
-    </button>
-
-    <button class="menu-btn" onclick="showPhotos()">
-        <i class="fa-solid fa-images"></i>
-        Related Photographs
-    </button>
-
-    <button class="menu-btn" onclick="streetView()">
-        <i class="fa-solid fa-street-view"></i>
-        Street View
-    </button>
-
-    <div class="divider"></div>
-
-    <div class="menu-title">JOURNEY PLANNER</div>
-
-    <button class="menu-btn" onclick="openRoutes()">
-        <i class="fa-solid fa-route"></i>
-        Calculate Distance
-    </button>
-
-    <div class="divider"></div>
-
-    <div class="menu-title">ADDITIONAL SERVICES</div>
-
-    <button class="menu-btn" onclick="openPhone()">
-        <i class="fa-solid fa-phone"></i>
-        Phone Information
-    </button>
-
-    <button class="menu-btn" onclick="shareLocation()">
-        <i class="fa-solid fa-share-nodes"></i>
-        Share My Location
-    </button>
-
-    <button class="menu-btn" onclick="worldView()">
-        <i class="fa-solid fa-earth-africa"></i>
-        Explore the World
-    </button>
-
-</div>
-
-
-<!-- LOCATION DETAILS -->
-
-<div class="right-panel" id="locationPanel">
-
-    <button class="close-btn" onclick="hidePanels()">×</button>
-
-    <h3>LOCATION DETAILS</h3>
-
-    <div id="locationInformation" class="panel-text">
-        Search for a location or tap the map.
+        <p class="small-text">
+            Satellite imagery is provided by an external map imagery service.
+            Image availability and resolution vary by location.
+        </p>
     </div>
 
-    <button class="primary-btn" onclick="openGoogleMaps()">
-        <i class="fa-solid fa-map"></i>
-        Explore in Google Maps
+    <div class="section">
+        <div class="section-title">
+            <span><i class="fa-solid fa-route"></i> Route Planner</span>
+        </div>
+
+        <input id="startPoint" placeholder="Starting location">
+
+        <input id="endPoint" placeholder="Destination">
+
+        <select id="travelMode">
+            <option value="driving-car">Car / Motorcycle</option>
+            <option value="cycling-regular">Bicycle</option>
+            <option value="foot-walking">Walking / Trekking</option>
+        </select>
+
+        <button class="primary-btn" onclick="calculateRoute()">
+            <i class="fa-solid fa-directions"></i> Calculate Route
+        </button>
+
+        <div id="routeResult" class="result-box"></div>
+
+        <p class="small-text">
+            Route calculation requires an OpenRouteService API key.
+            See the code instructions near the bottom.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span><i class="fa-solid fa-phone"></i> Phone Number Information</span>
+        </div>
+
+        <input id="phoneInput"
+        placeholder="Enter phone number with country code">
+
+        <button class="primary-btn" onclick="lookupPhone()">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            Analyse Number
+        </button>
+
+        <div id="phoneResult" class="result-box"></div>
+
+        <p class="small-text">
+            This tool checks numbering information. It cannot reveal a
+            person's live location, state, neighbourhood or exact address
+            from a mobile number.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span><i class="fa-solid fa-share-nodes"></i> Location Sharing</span>
+        </div>
+
+        <button class="primary-btn" onclick="shareMyLocation()">
+            <i class="fa-solid fa-share"></i> Share My Location
+        </button>
+
+        <p class="small-text">
+            Sharing requires your permission. Your location is not shared
+            automatically.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span><i class="fa-solid fa-images"></i> Place Photos</span>
+        </div>
+
+        <button class="secondary-btn" onclick="findPhotos()">
+            <i class="fa-solid fa-image"></i> Find Related Photos
+        </button>
+
+        <div id="photoResult" class="result-box"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span><i class="fa-solid fa-street-view"></i> Street-Level View</span>
+        </div>
+
+        <button class="primary-btn" onclick="openStreetView()">
+            <i class="fa-solid fa-street-view"></i>
+            Open Street View
+        </button>
+
+        <p class="small-text">
+            Street-level imagery is available only in locations covered
+            by the imagery provider.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span><i class="fa-solid fa-circle-info"></i> About Explorer</span>
+        </div>
+
+        <p class="small-text">
+            Globe Explorer is an interactive mapping platform for exploring
+            places around the world. It combines a 3D globe, maps, satellite
+            imagery, location search and route planning.
+        </p>
+    </div>
+
+</aside>
+
+<!-- MAP AREA -->
+
+<div class="map-area">
+
+    <button class="toggle-sidebar" onclick="toggleSidebar()"
+    title="Hide or show tools">
+        <i class="fa-solid fa-bars"></i>
     </button>
 
-    <button class="primary-btn" onclick="streetView()">
-        <i class="fa-solid fa-street-view"></i>
-        Explore Street View
-    </button>
+    <div class="map-search">
+        <input id="topSearch"
+        placeholder="Search a location..."
+        onkeydown="if(event.key==='Enter') searchTopLocation()">
 
-    <div id="photoContainer"></div>
+        <button onclick="searchTopLocation()">
+            <i class="fa-solid fa-search"></i>
+        </button>
+    </div>
 
-</div>
+    <div id="globeContainer">
+        <div id="globeViz"></div>
+    </div>
 
+    <div id="map"></div>
 
-<!-- ROUTE PLANNER -->
+    <div class="map-controls">
 
-<div class="route-panel" id="routePanel">
+        <button class="map-control" onclick="zoomIn()" title="Zoom in">
+            <i class="fa-solid fa-plus"></i>
+        </button>
 
-    <button class="close-btn" onclick="hidePanels()">×</button>
+        <button class="map-control" onclick="zoomOut()" title="Zoom out">
+            <i class="fa-solid fa-minus"></i>
+        </button>
 
-    <h3><i class="fa-solid fa-route"></i> JOURNEY PLANNER</h3>
+        <button class="map-control" onclick="useMyLocation()" title="My location">
+            <i class="fa-solid fa-location-crosshairs"></i>
+        </button>
 
-    <input class="input-field" id="origin"
-    placeholder="Starting location">
+        <button class="map-control" onclick="returnToGlobe()" title="Return to globe">
+            <i class="fa-solid fa-earth-americas"></i>
+        </button>
 
-    <input class="input-field" id="destination"
-    placeholder="Destination">
+    </div>
 
-    <select class="input-field" id="travelMode">
+    <div class="bottom-info">
+        <strong>GLOBE EXPLORER</strong><br>
+        <span id="coordinates">Select a place on the globe to explore it.</span>
+    </div>
 
-        <option value="foot-walking">Walking / Trekking</option>
+    <div class="location-card" id="locationCard">
+        <strong id="cardTitle">Selected Location</strong>
+        <div id="cardDetails"></div>
+        <button onclick="openSelectedInMap()">Explore This Place</button>
+    </div>
 
-        <option value="cycling-regular">Bicycling</option>
-
-        <option value="driving-car">Driving / Motorcycle</option>
-
-    </select>
-
-    <button class="primary-btn" onclick="setGPSOrigin()">
-        <i class="fa-solid fa-location-crosshairs"></i>
-        Use My GPS Location
-    </button>
-
-    <button class="primary-btn" onclick="calculateRoute()">
-        Calculate Route
-    </button>
-
-    <div class="route-result" id="routeResult">
-        Your journey information will appear here.
+    <div class="loading" id="loading">
+        <div class="loading-box">
+            <i class="fa-solid fa-earth-americas fa-spin"></i>
+            <div>Loading location...</div>
+        </div>
     </div>
 
 </div>
-
-
-<!-- PHONE LOOKUP -->
-
-<div class="phone-panel" id="phonePanel">
-
-    <button class="close-btn" onclick="hidePanels()">×</button>
-
-    <h3><i class="fa-solid fa-phone"></i> PHONE INFORMATION</h3>
-
-    <p style="font-size:12px;line-height:1.7;margin-bottom:10px">
-        Enter an international phone number to check its
-        country and numbering information.
-    </p>
-
-    <input class="input-field" id="phoneNumber"
-    placeholder="+2348012345678">
-
-    <button class="primary-btn" onclick="lookupNumber()">
-        Search Number
-    </button>
-
-    <div class="route-result" id="phoneResult">
-        Phone information will appear here.
-    </div>
-
 </div>
 
-
-<div class="loading" id="loading">
-    <i class="fa-solid fa-spinner fa-spin"></i>
-    <p>Searching worldwide...</p>
-</div>
+<footer>
+    GLOBE EXPLORER · WORLD MAPPING PLATFORM · MAP DATA © OPENSTREETMAP CONTRIBUTORS
+</footer>
 
 </div>
-
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-/* =================================
-   INITIALIZE WORLD MAP
-================================= */
+/* =====================================
+   GLOBAL VARIABLES
+===================================== */
 
-const map = L.map('map',{
-    zoomControl:true,
-    worldCopyJump:true
-}).setView([9.0820,8.6753],6);
+let map;
+let currentLayer;
+let selectedLat = 9.0820;
+let selectedLng = 8.6753;
+let selectedName = "Nigeria";
+let currentZoom = 6;
+let routeLayer = null;
+let currentMapLayer = "street";
 
+const ORS_API_KEY = "YOUR_OPENROUTESERVICE_API_KEY";
 
-const street = L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
-    maxZoom:19,
-    attribution:'© OpenStreetMap contributors'
-});
+const loading = document.getElementById("loading");
 
+function showLoading() {
+    loading.classList.add("show");
+}
 
-const satellite = L.tileLayer(
-'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-{
-    maxZoom:19,
-    attribution:'© Esri'
-});
+function hideLoading() {
+    loading.classList.remove("show");
+}
 
+/* =====================================
+   SIDEBAR HIDE / SHOW
+===================================== */
 
-const terrain = L.tileLayer(
-'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-{
-    maxZoom:17,
-    attribution:'© OpenTopoMap'
-});
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hidden");
+}
 
+/* =====================================
+   3D GLOBE
+===================================== */
 
-const labels = L.tileLayer(
-'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-{
-    maxZoom:19,
-    attribution:'© Esri'
-});
+let globe;
 
+function initializeGlobe() {
 
-street.addTo(map);
+    const globeElement = document.getElementById("globeViz");
 
+    globe = Globe()(globeElement)
+        .globeImageUrl(
+          "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+        )
+        .bumpImageUrl(
+          "https://unpkg.com/three-globe/example/img/earth-topology.png"
+        )
+        .backgroundColor("#020b18")
+        .showAtmosphere(true)
+        .atmosphereColor("#268bff")
+        .atmosphereAltitude(0.18)
+        .width(globeElement.clientWidth)
+        .height(globeElement.clientHeight)
+        .pointOfView({
+            lat:9.0820,
+            lng:8.6753,
+            altitude:2.5
+        });
 
-let activeMarker = null;
-let userMarker = null;
-let currentPlace = null;
-let currentPosition = null;
-let routeLine = null;
+    globe.onGlobeClick(({lat,lng}) => {
 
+        selectedLat = lat;
+        selectedLng = lng;
 
-/* =================================
-   CHANGE MAP LAYERS
-================================= */
+        selectedName = "Selected coordinates";
 
-function setLayer(type,button) {
+        document.getElementById("coordinates").textContent =
+            `Latitude: ${lat.toFixed(5)} | Longitude: ${lng.toFixed(5)}`;
 
-    [street,satellite,terrain,labels].forEach(layer=>{
-        if(map.hasLayer(layer)) map.removeLayer(layer);
+        document.getElementById("cardTitle").textContent =
+            "Selected Coordinates";
+
+        document.getElementById("cardDetails").textContent =
+            `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+        document.getElementById("locationCard").classList.add("show");
+
+        reverseLocation(lat,lng);
+
     });
 
-    if(type==='street') street.addTo(map);
+    window.addEventListener("resize",() => {
 
-    if(type==='satellite') satellite.addTo(map);
+        globe.width(globeElement.clientWidth);
+        globe.height(globeElement.clientHeight);
 
-    if(type==='terrain') terrain.addTo(map);
+    });
+}
 
-    if(type==='hybrid') {
-        satellite.addTo(map);
-        labels.addTo(map);
-    }
+initializeGlobe();
 
-    document.querySelectorAll('.menu-btn')
-    .forEach(b=>b.classList.remove('active'));
+/* =====================================
+   MAP INITIALIZATION
+===================================== */
 
-    button.classList.add('active');
+function initializeMap() {
+
+    if(map) return;
+
+    map = L.map("map",{
+        zoomControl:false,
+        worldCopyJump:true
+    }).setView([9.0820,8.6753],6);
+
+    const layers = {
+
+        street: L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom:19,
+                attribution:"© OpenStreetMap contributors"
+            }
+        ),
+
+        satellite: L.tileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            {
+                maxZoom:19,
+                attribution:"Tiles © Esri"
+            }
+        ),
+
+        labels: L.tileLayer(
+            "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
+            {
+                maxZoom:20,
+                attribution:"© CARTO"
+            }
+        ),
+
+        terrain: L.tileLayer(
+            "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom:17,
+                attribution:"© OpenTopoMap contributors"
+            }
+        )
+
+    };
+
+    window.mapLayers = layers;
+
+    currentLayer = layers.street;
+    currentLayer.addTo(map);
+
+    map.on("click",function(e) {
+
+        selectedLat = e.latlng.lat;
+        selectedLng = e.latlng.lng;
+
+        selectedName = "Selected Map Location";
+
+        updateCoordinates();
+
+        reverseLocation(selectedLat,selectedLng);
+
+    });
 
 }
 
+initializeMap();
 
-/* =================================
-   SEARCH LOCATION
-================================= */
+/* =====================================
+   VIEW SWITCHING
+===================================== */
 
-async function searchPlace() {
+function showGlobe() {
 
-    const query=document.getElementById('searchInput').value.trim();
+    document.getElementById("globeContainer").style.display="flex";
+    document.getElementById("map").classList.remove("visible");
 
-    if(!query) return alert('Enter a location.');
+    document.getElementById("coordinates").textContent =
+        "3D Earth view. Tap anywhere on the globe.";
 
-    showLoading(true);
+}
 
-    try {
+function showMap() {
 
-        const response=await fetch(
-        'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='
-        +encodeURIComponent(query)
+    document.getElementById("globeContainer").style.display="none";
+    document.getElementById("map").classList.add("visible");
+
+    setTimeout(() => {
+        map.invalidateSize();
+    },100);
+
+}
+
+function returnToGlobe() {
+    showGlobe();
+}
+
+function openSelectedInMap() {
+
+    showMap();
+
+    setTimeout(() => {
+
+        map.flyTo(
+            [selectedLat,selectedLng],
+            15,
+            {duration:2}
         );
 
-        if(!response.ok) throw new Error('Search unavailable');
+        addMarker(selectedLat,selectedLng,selectedName);
 
-        const data=await response.json();
+    },150);
 
-        if(!data.length) throw new Error('Location not found');
+}
 
-        displayPlace(data[0]);
+/* =====================================
+   MAP LAYERS
+===================================== */
+
+function changeLayer(type,button) {
+
+    showMap();
+
+    if(currentLayer) {
+        map.removeLayer(currentLayer);
+    }
+
+    if(type==="hybrid") {
+
+        currentLayer=window.mapLayers.satellite;
+        currentLayer.addTo(map);
+
+        window.mapLayers.labels.addTo(map);
+
+    } else {
+
+        if(map.hasLayer(window.mapLayers.labels)) {
+            map.removeLayer(window.mapLayers.labels);
+        }
+
+        currentLayer=window.mapLayers[type];
+        currentLayer.addTo(map);
 
     }
 
-    catch(error) {
+    currentMapLayer=type;
+
+    document.querySelectorAll(".grid-buttons button")
+    .forEach(btn=>btn.classList.remove("active"));
+
+    if(button) button.classList.add("active");
+
+    setTimeout(()=>map.invalidateSize(),100);
+
+}
+
+/* =====================================
+   LOCATION SEARCH
+===================================== */
+
+async function geocode(query) {
+
+    const response=await fetch(
+        "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q="
+        +encodeURIComponent(query)
+    );
+
+    if(!response.ok) throw new Error("Search service unavailable");
+
+    const data=await response.json();
+
+    if(!data.length) throw new Error("Location not found");
+
+    return data[0];
+
+}
+
+async function searchLocation() {
+
+    const query=document.getElementById("locationInput").value.trim();
+
+    if(!query) return;
+
+    showLoading();
+
+    try {
+
+        const place=await geocode(query);
+
+        selectedLat=Number(place.lat);
+        selectedLng=Number(place.lon);
+        selectedName=place.display_name;
+
+        showMap();
+
+        setTimeout(()=>{
+
+            map.flyTo(
+                [selectedLat,selectedLng],
+                15,
+                {duration:2.2}
+            );
+
+            addMarker(selectedLat,selectedLng,selectedName);
+
+        },150);
+
+        document.getElementById("searchResult").classList.add("show");
+
+        document.getElementById("searchResult").innerHTML=
+            `<strong>Location found</strong><br>
+            ${escapeHTML(place.display_name)}<br>
+            Latitude: ${selectedLat.toFixed(5)}<br>
+            Longitude: ${selectedLng.toFixed(5)}`;
+
+        updateCoordinates();
+
+    } catch(error) {
 
         alert(error.message);
 
     }
 
-    finally {
+    hideLoading();
 
-        showLoading(false);
+}
+
+async function searchTopLocation() {
+
+    const query=document.getElementById("topSearch").value.trim();
+
+    document.getElementById("locationInput").value=query;
+
+    await searchLocation();
+
+}
+
+/* =====================================
+   REVERSE LOCATION SEARCH
+===================================== */
+
+async function reverseLocation(lat,lng) {
+
+    try {
+
+        const response=await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`
+        );
+
+        const data=await response.json();
+
+        selectedName=data.display_name || "Selected Location";
+
+        document.getElementById("cardTitle").textContent=
+            selectedName.split(",")[0];
+
+        document.getElementById("cardDetails").innerHTML=
+            `Latitude: ${lat.toFixed(5)}<br>
+             Longitude: ${lng.toFixed(5)}<br>
+             ${escapeHTML(selectedName)}`;
+
+        document.getElementById("locationCard").classList.add("show");
+
+        document.getElementById("coordinates").textContent=
+            selectedName.substring(0,100);
+
+    } catch(error) {
+
+        console.log(error);
 
     }
 
 }
 
+/* =====================================
+   MAP MARKERS
+===================================== */
 
-document.getElementById('searchInput')
-.addEventListener('keydown',e=>{
-    if(e.key==='Enter') searchPlace();
-});
+let activeMarker=null;
 
+function addMarker(lat,lng,name) {
 
-function displayPlace(place) {
+    if(activeMarker) {
+        map.removeLayer(activeMarker);
+    }
 
-    const lat=Number(place.lat);
-    const lon=Number(place.lon);
-
-    currentPlace={
-        name:place.display_name,
-        lat:lat,
-        lon:lon
-    };
-
-    if(activeMarker) map.removeLayer(activeMarker);
-
-    activeMarker=L.marker([lat,lon])
+    activeMarker=L.marker([lat,lng])
     .addTo(map)
-    .bindPopup(place.display_name)
+    .bindPopup(`<b>${escapeHTML(name)}</b>`)
     .openPopup();
 
-    map.flyTo([lat,lon],17,{
-        duration:1.5
-    });
+    document.getElementById("cardTitle").textContent=
+        name.split(",")[0];
 
-    document.getElementById('locationInformation').innerHTML=`
+    document.getElementById("cardDetails").textContent=
+        `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
-        <b>Location:</b><br>
-        ${escapeHTML(place.display_name)}
-
-        <br><br>
-
-        <b>Latitude:</b><br>${lat}
-
-        <br><br>
-
-        <b>Longitude:</b><br>${lon}
-
-        <br><br>
-
-        <b>Feature type:</b><br>
-        ${escapeHTML(place.type || 'Unknown')}
-
-        <br><br>
-
-        <b>Coordinates:</b><br>
-        ${lat}, ${lon}
-
-    `;
-
-    document.getElementById('locationPanel')
-    .style.display='block';
-
-    loadPhotos(place.display_name);
+    document.getElementById("locationCard").classList.add("show");
 
 }
 
+function updateCoordinates() {
 
-function escapeHTML(value) {
-
-    return String(value).replace(/[&<>"']/g,c=>({
-        '&':'&amp;',
-        '<':'&lt;',
-        '>':'&gt;',
-        '"':'&quot;',
-        "'":'&#39;'
-    })[c]);
+    document.getElementById("coordinates").textContent=
+        `Latitude: ${selectedLat.toFixed(5)} | Longitude: ${selectedLng.toFixed(5)}`;
 
 }
 
-
-/* =================================
+/* =====================================
    GPS LOCATION
-================================= */
+===================================== */
 
-function findMe() {
+function useMyLocation() {
 
     if(!navigator.geolocation) {
-        return alert('GPS is not supported.');
+
+        alert("GPS is not supported by this browser.");
+        return;
+
     }
 
     navigator.geolocation.getCurrentPosition(
 
         position=>{
 
-            const lat=position.coords.latitude;
-            const lon=position.coords.longitude;
+            selectedLat=position.coords.latitude;
+            selectedLng=position.coords.longitude;
+            selectedName="My Current Location";
 
-            currentPosition={lat,lon};
+            showMap();
 
-            if(userMarker) map.removeLayer(userMarker);
+            setTimeout(()=>{
 
-            userMarker=L.marker([lat,lon])
-            .addTo(map)
-            .bindPopup('Your current location')
-            .openPopup();
+                map.flyTo(
+                    [selectedLat,selectedLng],
+                    16,
+                    {duration:2}
+                );
 
-            L.circle([lat,lon],{
-                radius:position.coords.accuracy,
-                color:'#087cf0'
-            }).addTo(map);
+                addMarker(
+                    selectedLat,
+                    selectedLng,
+                    "My Current Location"
+                );
 
-            map.flyTo([lat,lon],18);
+                updateCoordinates();
+
+                reverseLocation(selectedLat,selectedLng);
+
+            },150);
 
         },
 
         error=>{
-            alert('Please allow GPS location permission.');
+
+            alert(
+                "Location permission was not granted or GPS is unavailable."
+            );
+
         },
 
         {
@@ -984,146 +1322,302 @@ function findMe() {
 
 }
 
+/* =====================================
+   ZOOM CONTROLS
+===================================== */
 
-/* =================================
-   MAP CLICK LOCATION
-================================= */
+function zoomIn() {
 
-map.on('click',async e=>{
+    if(document.getElementById("map").classList.contains("visible")) {
+        map.zoomIn();
+    } else {
+        const pov=globe.pointOfView();
+        globe.pointOfView(
+            {...pov,altitude:Math.max(.2,pov.altitude*.75)},
+            500
+        );
+    }
 
-    const lat=e.latlng.lat;
-    const lon=e.latlng.lng;
+}
 
-    showLoading(true);
+function zoomOut() {
+
+    if(document.getElementById("map").classList.contains("visible")) {
+        map.zoomOut();
+    } else {
+        const pov=globe.pointOfView();
+        globe.pointOfView(
+            {...pov,altitude:Math.min(5,pov.altitude*1.3)},
+            500
+        );
+    }
+
+}
+
+/* =====================================
+   PHONE NUMBER INFORMATION
+===================================== */
+
+function lookupPhone() {
+
+    const input=document.getElementById("phoneInput").value.trim();
+
+    const result=document.getElementById("phoneResult");
+
+    if(!input) {
+        alert("Enter a phone number.");
+        return;
+    }
 
     try {
 
+        const number=libphonenumber.parsePhoneNumber(input);
+
+        if(!number || !number.isValid()) {
+            throw new Error("Invalid phone number.");
+        }
+
+        const country=number.country || "Not identified";
+        const callingCode="+"+number.countryCallingCode;
+        const numberType=number.getType() || "Not specified";
+
+        let typeDescription=numberType;
+
+        if(numberType==="MOBILE") {
+            typeDescription="Mobile phone number";
+        }
+
+        if(numberType==="FIXED_LINE") {
+            typeDescription="Fixed telephone number";
+        }
+
+        let extra="";
+
+        if(country==="NG") {
+
+            extra=`
+            <div class="divider"></div>
+            <strong>Nigeria information</strong><br>
+            Country: Nigeria<br>
+            International calling code: +234<br>
+            <br>
+            <strong>State / current area:</strong><br>
+            Not available from a Nigerian mobile number.<br>
+            <br>
+            Mobile numbers are not reliable indicators of a
+            person's present state or neighbourhood.
+            `;
+
+        }
+
+        result.innerHTML=`
+            <strong>Number Information</strong><br>
+            International format: ${escapeHTML(number.formatInternational())}<br>
+            Country: ${escapeHTML(country)}<br>
+            Calling code: ${escapeHTML(callingCode)}<br>
+            Number type: ${escapeHTML(typeDescription)}<br>
+            Valid number: Yes
+            ${extra}
+            <div class="divider"></div>
+            <span class="small-text">
+            This is numbering information, not a live phone location.
+            </span>
+        `;
+
+        result.classList.add("show");
+
+    } catch(error) {
+
+        result.innerHTML=
+            `<strong>Number not recognised</strong><br>
+            Enter a valid international phone number, including its country code.`;
+
+        result.classList.add("show");
+
+    }
+
+}
+
+/* =====================================
+   ROUTE PLANNING
+===================================== */
+
+async function calculateRoute() {
+
+    const start=document.getElementById("startPoint").value.trim();
+    const end=document.getElementById("endPoint").value.trim();
+    const mode=document.getElementById("travelMode").value;
+
+    const result=document.getElementById("routeResult");
+
+    if(!start || !end) {
+        alert("Enter both starting location and destination.");
+        return;
+    }
+
+    if(ORS_API_KEY==="YOUR_OPENROUTESERVICE_API_KEY") {
+
+        result.innerHTML=`
+            <strong>API key required</strong><br>
+            To activate route calculation, create an API key from
+            OpenRouteService and replace the placeholder in the code.
+        `;
+
+        result.classList.add("show");
+        return;
+
+    }
+
+    showLoading();
+
+    try {
+
+        const startPlace=await geocode(start);
+        const endPlace=await geocode(end);
+
+        const startCoords=[
+            Number(startPlace.lon),
+            Number(startPlace.lat)
+        ];
+
+        const endCoords=[
+            Number(endPlace.lon),
+            Number(endPlace.lat)
+        ];
+
         const response=await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+            `https://api.openrouteservice.org/v2/directions/${mode}/geojson`,
+            {
+                method:"POST",
+                headers:{
+                    "Authorization":ORS_API_KEY,
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    coordinates:[startCoords,endCoords]
+                })
+            }
         );
+
+        if(!response.ok) {
+            throw new Error("Route service could not calculate this route.");
+        }
 
         const data=await response.json();
 
-        displayPlace({
+        const coordinates=data.features[0].geometry.coordinates;
 
-            lat:lat,
-            lon:lon,
-            display_name:data.display_name || 'Selected location',
-            type:data.type || 'Map point'
+        const latlngs=coordinates.map(point=>[point[1],point[0]]);
 
-        });
+        showMap();
+
+        setTimeout(()=>{
+
+            if(routeLayer) map.removeLayer(routeLayer);
+
+            routeLayer=L.polyline(latlngs,{
+                color:"#168cff",
+                weight:6,
+                opacity:.9
+            }).addTo(map);
+
+            map.fitBounds(routeLayer.getBounds(),{
+                padding:[50,50]
+            });
+
+            const summary=data.features[0].properties.summary;
+
+            result.innerHTML=`
+                <strong>Route calculated</strong><br>
+                Distance: ${(summary.distance/1000).toFixed(2)} km<br>
+                Estimated duration: ${(summary.duration/60).toFixed(0)} minutes
+            `;
+
+            result.classList.add("show");
+
+        },200);
+
+    } catch(error) {
+
+        result.innerHTML=
+            `<strong>Route error</strong><br>${escapeHTML(error.message)}`;
+
+        result.classList.add("show");
 
     }
 
-    catch(error) {
+    hideLoading();
 
-        currentPlace={
-            name:'Selected map location',
-            lat:lat,
-            lon:lon
-        };
+}
 
-        document.getElementById('locationInformation')
-        .textContent=`Latitude: ${lat}; Longitude: ${lon}`;
+/* =====================================
+   LOCATION SHARING
+===================================== */
 
-        document.getElementById('locationPanel')
-        .style.display='block';
+function shareMyLocation() {
 
-    }
-
-    finally {
-
-        showLoading(false);
-
-    }
-
-});
-
-
-/* =================================
-   LOCATION DETAILS
-================================= */
-
-function showLocationPanel() {
-
-    if(!currentPlace) {
-        alert('Search for a location or tap the map first.');
+    if(!navigator.geolocation) {
+        alert("GPS is unavailable.");
         return;
     }
 
-    document.getElementById('locationPanel')
-    .style.display='block';
+    navigator.geolocation.getCurrentPosition(async position=>{
+
+        const lat=position.coords.latitude;
+        const lng=position.coords.longitude;
+
+        const link=`https://www.google.com/maps?q=${lat},${lng}`;
+
+        try {
+
+            await navigator.clipboard.writeText(link);
+
+            alert("Your location link has been copied. You can now share it.");
+
+        } catch(error) {
+
+            prompt("Copy your location link:",link);
+
+        }
+
+    },()=>{
+
+        alert("Location permission is required.");
+
+    });
 
 }
 
+/* =====================================
+   RELATED PHOTOS
+===================================== */
 
-function openGoogleMaps() {
+async function findPhotos() {
 
-    if(!currentPlace) return;
+    const result=document.getElementById("photoResult");
 
-    window.open(
-    `https://www.google.com/maps/search/?api=1&query=${currentPlace.lat},${currentPlace.lon}`,
-    '_blank'
-    );
+    result.classList.add("show");
 
-}
-
-
-/* =================================
-   STREET VIEW
-================================= */
-
-function streetView() {
-
-    if(!currentPlace) {
-        alert('Select a location first.');
-        return;
-    }
-
-    window.open(
-    `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${currentPlace.lat},${currentPlace.lon}`,
-    '_blank'
-    );
-
-}
-
-
-/* =================================
-   RELATED PHOTOGRAPHS
-================================= */
-
-async function loadPhotos(name) {
-
-    const container=document.getElementById('photoContainer');
-
-    container.innerHTML='<p>Loading photographs...</p>';
+    result.innerHTML="Searching for related photographs...";
 
     try {
 
-        const url=
-        'https://commons.wikimedia.org/w/api.php?action=query'
-        +'&generator=search'
-        +'&gsrsearch='+encodeURIComponent(name)
-        +'&gsrnamespace=6'
-        +'&gsrlimit=8'
-        +'&prop=imageinfo'
-        +'&iiprop=url'
-        +'&iiurlwidth=300'
-        +'&format=json'
-        +'&origin=*';
+        const query=encodeURIComponent(selectedName.split(",")[0]);
 
-        const response=await fetch(url);
+        const response=await fetch(
+            `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${query}&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url&iiurlwidth=350&format=json&origin=*`
+        );
 
         const data=await response.json();
 
         const pages=data.query?.pages;
 
         if(!pages) {
-            container.innerHTML='<p>No photographs available.</p>';
+            result.innerHTML="No related photographs found.";
             return;
         }
 
-        let html='<h3 style="margin-top:15px">Related Photographs</h3><div class="photo-grid">';
+        let html="";
 
         Object.values(pages).forEach(page=>{
 
@@ -1132,365 +1626,83 @@ async function loadPhotos(name) {
             if(image) {
 
                 html+=`
-                <a href="${image}" target="_blank">
-                    <img src="${image}" loading="lazy" alt="Location photograph">
-                </a>`;
+                <div style="margin-bottom:12px">
+                    <img src="${image}"
+                    style="width:100%;border-radius:8px"
+                    loading="lazy">
+                    <div class="small-text">
+                    ${escapeHTML(page.title)}
+                    </div>
+                </div>`;
 
             }
 
         });
 
-        html+='</div>';
+        result.innerHTML=html || "No photographs found.";
 
-        container.innerHTML=html;
+    } catch(error) {
 
-    }
-
-    catch(error) {
-
-        container.innerHTML='<p>Unable to load photographs.</p>';
+        result.innerHTML="Photo service is currently unavailable.";
 
     }
 
 }
 
+/* =====================================
+   STREET VIEW
+===================================== */
 
-function showPhotos() {
+function openStreetView() {
 
-    if(!currentPlace) {
-        alert('Search for a location first.');
-        return;
-    }
+    const url=
+        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${selectedLat},${selectedLng}`;
 
-    document.getElementById('locationPanel')
-    .style.display='block';
-
-    loadPhotos(currentPlace.name);
+    window.open(url,"_blank");
 
 }
 
+/* =====================================
+   HTML SAFETY
+===================================== */
 
-/* =================================
-   JOURNEY PLANNER
-================================= */
+function escapeHTML(value) {
 
-function openRoutes() {
+    return String(value).replace(/[&<>"']/g,function(character) {
 
-    hidePanels();
+        return {
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            '"':"&quot;",
+            "'":"&#039;"
+        }[character];
 
-    document.getElementById('routePanel')
-    .style.display='block';
-
-}
-
-
-function setGPSOrigin() {
-
-    navigator.geolocation.getCurrentPosition(
-
-        position=>{
-
-            currentPosition={
-                lat:position.coords.latitude,
-                lon:position.coords.longitude
-            };
-
-            document.getElementById('origin').value=
-            currentPosition.lat+','+currentPosition.lon;
-
-        },
-
-        ()=>alert('Unable to access your GPS.')
-
-    );
+    });
 
 }
 
+/* =====================================
+   INITIAL SETTINGS
+===================================== */
 
-async function geocodeLocation(query) {
+window.addEventListener("load",()=>{
 
-    const response=await fetch(
-    'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='
-    +encodeURIComponent(query)
-    );
+    setTimeout(()=>{
 
-    const data=await response.json();
+        if(globe) {
 
-    if(!data.length) throw new Error('Location not found: '+query);
-
-    return [
-        Number(data[0].lon),
-        Number(data[0].lat)
-    ];
-
-}
-
-
-async function calculateRoute() {
-
-    const origin=document.getElementById('origin').value.trim();
-
-    const destination=document.getElementById('destination').value.trim();
-
-    const mode=document.getElementById('travelMode').value;
-
-    const result=document.getElementById('routeResult');
-
-    if(!origin || !destination) {
-        alert('Enter both locations.');
-        return;
-    }
-
-    const API_KEY='YOUR_OPENROUTESERVICE_API_KEY';
-
-    if(API_KEY==='YOUR_OPENROUTESERVICE_API_KEY') {
-
-        result.innerHTML=`
-        <p style="color:#f5c451">
-        Route calculation requires an API key.
-        </p>
-
-        <button class="primary-btn"
-        onclick="window.open('https://openrouteservice.org/dev/#/signup','_blank')">
-        Get Free API Key
-        </button>`;
-
-        return;
-
-    }
-
-    result.innerHTML='Calculating your journey...';
-
-    try {
-
-        const start=await geocodeLocation(origin);
-
-        const end=await geocodeLocation(destination);
-
-        const response=await fetch(
-        `https://api.openrouteservice.org/v2/directions/${mode}/geojson`,
-        {
-            method:'POST',
-
-            headers:{
-                'Authorization':API_KEY,
-                'Content-Type':'application/json'
-            },
-
-            body:JSON.stringify({
-                coordinates:[start,end]
-            })
-
-        });
-
-        if(!response.ok) throw new Error('Routing service unavailable.');
-
-        const data=await response.json();
-
-        const feature=data.features[0];
-
-        const summary=feature.properties.summary;
-
-        if(routeLine) map.removeLayer(routeLine);
-
-        routeLine=L.geoJSON(feature,{
-            style:{
-                color:'#087cf0',
-                weight:6
-            }
-        }).addTo(map);
-
-        map.fitBounds(routeLine.getBounds(),{
-            padding:[40,40]
-        });
-
-        result.innerHTML=`
-
-            <h3 style="color:#42e6a4">ROUTE FOUND</h3>
-
-            <b>Distance:</b>
-            ${(summary.distance/1000).toFixed(2)} km
-
-            <br>
-
-            <b>Estimated time:</b>
-            ${Math.round(summary.duration/60)} minutes
-
-            <br>
-
-            <b>Travel mode:</b>
-            ${mode}
-
-        `;
-
-    }
-
-    catch(error) {
-
-        result.innerHTML=escapeHTML(error.message);
-
-    }
-
-}
-
-
-/* =================================
-   PHONE NUMBER INFORMATION
-================================= */
-
-function openPhone() {
-
-    hidePanels();
-
-    document.getElementById('phonePanel')
-    .style.display='block';
-
-}
-
-
-function lookupNumber() {
-
-    const number=document.getElementById('phoneNumber').value.trim();
-
-    const output=document.getElementById('phoneResult');
-
-    try {
-
-        const parsed=libphonenumber.parsePhoneNumberFromString(number,'NG');
-
-        if(!parsed || !parsed.isValid()) {
-
-            output.innerHTML='Invalid phone number.';
-
-            return;
+            globe.pointOfView({
+                lat:9.0820,
+                lng:8.6753,
+                altitude:2.5
+            },1000);
 
         }
 
-        output.innerHTML=`
+    },500);
 
-            <b>Phone number:</b><br>
-            ${escapeHTML(parsed.formatInternational())}
-
-            <br><br>
-
-            <b>Country:</b><br>
-            ${escapeHTML(parsed.country || 'Unknown')}
-
-            <br><br>
-
-            <b>Country calling code:</b><br>
-            +${parsed.countryCallingCode}
-
-            <br><br>
-
-            <b>Number type:</b><br>
-            ${escapeHTML(parsed.getType() || 'Unknown')}
-
-            <br><br>
-
-            <span style="color:#f5c451">
-            Privacy protection: Phone numbers cannot reveal
-            someone's private live location, seating position,
-            home interior or personal profile.
-            </span>
-
-        `;
-
-    }
-
-    catch(error) {
-
-        output.innerHTML='Unable to process this number.';
-
-    }
-
-}
-
-
-/* =================================
-   LOCATION SHARING
-================================= */
-
-function shareLocation() {
-
-    if(!navigator.geolocation) {
-        alert('GPS unavailable.');
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-
-        async position=>{
-
-            const lat=position.coords.latitude;
-            const lon=position.coords.longitude;
-
-            const link=`https://www.google.com/maps?q=${lat},${lon}`;
-
-            try {
-
-                await navigator.clipboard.writeText(link);
-
-                alert('Location link copied. Share it with someone you choose.');
-
-            }
-
-            catch(error) {
-
-                prompt('Copy your location link:',link);
-
-            }
-
-        },
-
-        ()=>alert('Please allow location access.')
-
-    );
-
-}
-
-
-/* =================================
-   WORLD VIEW
-================================= */
-
-function worldView() {
-
-    map.flyTo([20,0],2);
-
-}
-
-
-/* =================================
-   PANEL CONTROLS
-================================= */
-
-function hidePanels() {
-
-    document.getElementById('locationPanel').style.display='none';
-
-    document.getElementById('routePanel').style.display='none';
-
-    document.getElementById('phonePanel').style.display='none';
-
-}
-
-
-function showLoading(show) {
-
-    document.getElementById('loading').style.display=
-    show?'block':'none';
-
-}
-
-
-/* =================================
-   INITIALIZATION
-================================= */
-
-map.zoomControl.setPosition('bottomright');
-
-console.log('GLOBE EXPLORER PROFESSIONAL READY');
+});
 
 </script>
 
