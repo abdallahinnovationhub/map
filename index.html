@@ -1,1159 +1,1406 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07152e">
-<title>Encouraging Young Programmers</title><style>
+<meta name="theme-color" content="#071a32">
+
+<title>Globe Explorer | Worldwide Maps</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 :root {
-    --bg: #07152e;
-    --card: #102443;
-    --blue: #287bff;
-    --cyan: #00d9ff;
-    --green: #00e6a0;
-    --white: #ffffff;
-    --muted: #b6c6df;
-}
-
-html {
-    scroll-behavior: smooth;
+    --blue:#087cf0;
+    --dark:#071a32;
+    --gold:#f6c453;
+    --glass:rgba(8,24,48,.94);
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background: var(--bg);
-    color: white;
-    overflow-x: hidden;
+    font-family:Arial,sans-serif;
+    background:#071a32;
+    color:white;
+    overflow:hidden;
 }
 
+/* BACKGROUND */
+
+#app {
+    height:100vh;
+    width:100%;
+    position:relative;
+    background:
+    linear-gradient(135deg,#071a32,#103c65,#071a32);
+}
+
+/* HEADER */
+
 header {
-    min-height: 75px;
-    padding: 15px 6%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(7,21,46,.96);
-    border-bottom: 1px solid #203d61;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:65px;
+    z-index:1000;
+    background:rgba(4,17,36,.95);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    border-bottom:1px solid rgba(255,255,255,.15);
 }
 
 .logo {
-    font-size: 21px;
-    font-weight: bold;
-    color: var(--cyan);
+    font-size:20px;
+    font-weight:bold;
+    color:#f6c453;
+}
+
+.logo i {
+    color:#168cff;
+    margin-right:7px;
+}
+
+.header-right {
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.status {
+    font-size:11px;
+    color:#42e6a4;
+}
+
+#map {
+    position:absolute;
+    top:65px;
+    bottom:0;
+    width:100%;
+    z-index:1;
+}
+
+/* SEARCH BAR */
+
+.search-box {
+    position:absolute;
+    z-index:900;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(550px,94%);
+    display:flex;
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 5px 25px #0006;
+}
+
+.search-box input {
+    flex:1;
+    padding:16px;
+    border:none;
+    outline:none;
+    color:#15283d;
+    font-size:14px;
+    min-width:0;
+}
+
+.search-box button {
+    background:#087cf0;
+    color:white;
+    border:none;
+    padding:0 19px;
+    cursor:pointer;
+    font-size:17px;
 }
 
-.logo span {
-    color: white;
-}
-
-nav {
-    display: flex;
-    gap: 22px;
-}
-
-nav a {
-    text-decoration: none;
-    color: white;
-    font-size: 14px;
-}
-
-nav a:hover {
-    color: var(--cyan);
-}
-
-.menu {
-    display: none;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 27px;
-}
-
-.hero {
-    min-height: 600px;
-    padding: 90px 7%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 40px;
-    background:
-    radial-gradient(circle at 80% 30%, #123d73 0%, transparent 40%),
-    linear-gradient(135deg,#07152e,#0c2447);
-}
-
-.hero-content {
-    max-width: 650px;
-    animation: slideIn 1s ease;
-}
-
-.hero h1 {
-    font-size: clamp(38px,6vw,65px);
-    line-height: 1.12;
-    margin-bottom: 22px;
-}
-
-.hero h1 span {
-    color: var(--cyan);
-}
-
-.hero p {
-    color: var(--muted);
-    font-size: 17px;
-    line-height: 1.8;
-    margin-bottom: 28px;
-}
-
-.btn {
-    display: inline-block;
-    padding: 15px 25px;
-    border-radius: 8px;
-    background: var(--blue);
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    transition: .3s;
-}
-
-.btn:hover {
-    background: var(--cyan);
-    color: #07152e;
-    transform: translateY(-4px);
-}
-
-.btn-outline {
-    background: transparent;
-    border: 1px solid var(--cyan);
-    margin-left: 10px;
-}
-
-.code-animation {
-    width: 420px;
-    max-width: 100%;
-    padding: 25px;
-    border-radius: 15px;
-    background: #091326;
-    border: 1px solid #24517c;
-    box-shadow: 0 0 45px #008cff30;
-    animation: float 4s infinite ease-in-out;
-}
-
-.dots {
-    display: flex;
-    gap: 7px;
-    margin-bottom: 25px;
-}
-
-.dot {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-}
-
-.red {background:#ff5757;}
-.yellow {background:#ffcc50;}
-.green {background:#00d88c;}
-
-.code-animation pre {
-    font-size: 15px;
-    line-height: 2;
-    color: #7ee7ff;
-    white-space: pre-wrap;
-}
-
-.code-animation .comment {
-    color: #7e93a8;
-}
-
-.code-animation .keyword {
-    color: #c792ea;
-}
-
-.code-animation .string {
-    color: #a5e075;
-}
-
-@keyframes float {
-    0%,100% {transform:translateY(0);}
-    50% {transform:translateY(-15px);}
-}
-
-@keyframes slideIn {
-    from {opacity:0;transform:translateX(-40px);}
-    to {opacity:1;transform:translateX(0);}
-}
-
-@keyframes blink {
-    50% {opacity:0;}
-}
-
-.cursor {
-    animation: blink 1s infinite;
-}
-
-section {
-    padding: 75px 7%;
-}
-
-.section-title {
-    text-align: center;
-    font-size: 35px;
-    margin-bottom: 15px;
-}
-
-.section-subtitle {
-    text-align: center;
-    color: var(--muted);
-    margin-bottom: 45px;
-    line-height: 1.7;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 20px;
-    margin-top: 45px;
-}
-
-.stat {
-    background: var(--card);
-    padding: 25px;
-    text-align: center;
-    border-radius: 12px;
-    border: 1px solid #29486d;
-}
+/* SIDE PANEL */
 
-.stat h2 {
-    color: var(--cyan);
-    font-size: 32px;
-    margin-bottom: 8px;
+.sidebar {
+    position:absolute;
+    z-index:800;
+    left:12px;
+    top:145px;
+    width:270px;
+    max-height:calc(100vh - 165px);
+    overflow-y:auto;
+    background:var(--glass);
+    border:1px solid #ffffff25;
+    border-radius:15px;
+    padding:15px;
+    backdrop-filter:blur(15px);
+    box-shadow:0 5px 25px #0005;
 }
 
-.courses {
-    background: #0b1c36;
+.sidebar h3 {
+    font-size:15px;
+    margin-bottom:14px;
+    color:var(--gold);
 }
 
-.course-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-    gap: 22px;
+.menu-button {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    padding:13px;
+    margin-bottom:7px;
+    background:#ffffff0d;
+    border:1px solid #ffffff12;
+    border-radius:9px;
+    color:white;
+    text-align:left;
+    cursor:pointer;
+    font-size:13px;
 }
 
-.course {
-    background: var(--card);
-    border: 1px solid #244466;
-    padding: 28px;
-    border-radius: 14px;
-    transition: .3s;
+.menu-button i {
+    width:20px;
+    color:#50aaff;
+    font-size:16px;
 }
 
-.course:hover {
-    transform: translateY(-9px);
-    border-color: var(--cyan);
-    box-shadow: 0 10px 35px #00d9ff18;
+.menu-button:hover,
+.menu-button.active {
+    background:#087cf0;
 }
 
-.course-icon {
-    font-size: 45px;
-    margin-bottom: 18px;
+.section {
+    border-top:1px solid #ffffff20;
+    padding-top:14px;
+    margin-top:14px;
 }
 
-.course h3 {
-    margin-bottom: 12px;
-}
-
-.course p {
-    color: var(--muted);
-    line-height: 1.7;
-    margin-bottom: 20px;
-}
-
-.course button {
-    width: 100%;
-}
-
-.lessons {
-    background: var(--bg);
-}
-
-.lesson-box {
-    max-width: 850px;
-    margin: auto;
-    background: var(--card);
-    border: 1px solid #29486d;
-    border-radius: 15px;
-    padding: 30px;
-}
-
-.lesson-box h3 {
-    color: var(--cyan);
-    margin-bottom: 15px;
-}
+/* INFORMATION PANEL */
 
-.lesson-box p {
-    color: var(--muted);
-    line-height: 1.8;
-    margin-bottom: 15px;
-}
+.info-panel {
+    position:absolute;
+    z-index:850;
+    right:12px;
+    top:145px;
+    width:290px;
+    max-height:calc(100vh - 165px);
+    overflow-y:auto;
+    padding:16px;
+    background:var(--glass);
+    border:1px solid #ffffff25;
+    border-radius:15px;
+    backdrop-filter:blur(15px);
+    display:none;
+}
 
-.lesson-code {
-    background: #07111f;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 20px 0;
-    overflow-x: auto;
-    color: #a5e075;
-    line-height: 1.8;
+.info-panel h3 {
+    color:var(--gold);
+    margin-bottom:12px;
 }
 
-.playground {
-    background: #0b1c36;
+.info-panel p {
+    font-size:13px;
+    line-height:1.7;
+    margin-bottom:9px;
 }
 
-.editor {
-    max-width: 1000px;
-    margin: auto;
-    background: #07111f;
-    border-radius: 15px;
-    overflow: hidden;
-    border: 1px solid #315071;
+.close {
+    float:right;
+    cursor:pointer;
+    font-size:19px;
 }
 
-.editor-top {
-    padding: 18px;
-    background: #142a48;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
+.info-panel img {
+    width:100%;
+    border-radius:9px;
+    margin-top:10px;
 }
 
-.editor-top select {
-    padding: 10px;
-    border-radius: 6px;
-    background: #07152e;
-    color: white;
-    border: 1px solid #456;
-}
+/* BUTTONS */
 
-.editor-body {
-    padding: 20px;
+.action-btn {
+    width:100%;
+    padding:12px;
+    border:none;
+    background:#087cf0;
+    color:white;
+    border-radius:8px;
+    margin-top:8px;
+    cursor:pointer;
+    font-weight:bold;
 }
 
-textarea {
-    width: 100%;
-    min-height: 260px;
-    background: #050c18;
-    color: #75e6ff;
-    border: 1px solid #264565;
-    border-radius: 8px;
-    padding: 18px;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 1.7;
-    resize: vertical;
+.action-btn:hover {
+    background:#005ac0;
 }
 
-.output-title {
-    margin: 22px 0 10px;
-    color: var(--green);
-}
+/* ROUTE PANEL */
 
-iframe {
-    width: 100%;
-    height: 230px;
-    background: white;
-    border: none;
-    border-radius: 8px;
+.route-panel {
+    position:absolute;
+    z-index:950;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:18px;
+    width:min(420px,94%);
+    background:var(--glass);
+    border:1px solid #ffffff30;
+    padding:15px;
+    border-radius:15px;
+    display:none;
+    max-height:65vh;
+    overflow-y:auto;
 }
 
-.quiz {
-    max-width: 750px;
-    margin: auto;
-    background: var(--card);
-    padding: 30px;
-    border-radius: 15px;
+.route-panel h3 {
+    color:var(--gold);
+    margin-bottom:12px;
 }
 
-.quiz h3 {
-    margin-bottom: 20px;
+.route-panel input,
+.phone-panel input {
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    margin-bottom:9px;
+    outline:none;
 }
 
-.quiz button.option {
-    display: block;
-    width: 100%;
-    text-align: left;
-    margin: 12px 0;
-    padding: 15px;
-    background: #173557;
-    color: white;
-    border: 1px solid #426184;
-    border-radius: 8px;
-    cursor: pointer;
+select {
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    margin-bottom:10px;
 }
 
-.quiz button.option:hover {
-    border-color: var(--cyan);
-}
+/* PHONE PANEL */
 
-#quiz-result {
-    margin-top: 18px;
-    color: var(--green);
-    font-weight: bold;
+.phone-panel {
+    position:absolute;
+    z-index:950;
+    top:145px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(380px,94%);
+    background:var(--glass);
+    padding:18px;
+    border-radius:15px;
+    border:1px solid #ffffff30;
+    display:none;
+    max-height:70vh;
+    overflow-y:auto;
 }
 
-.progress-container {
-    max-width: 700px;
-    margin: 30px auto;
+.phone-panel h3 {
+    color:var(--gold);
+    margin-bottom:12px;
 }
 
-.progress-bar {
-    width: 100%;
-    height: 15px;
-    background: #263c58;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-top: 12px;
+.phone-result {
+    background:#ffffff12;
+    padding:12px;
+    border-radius:8px;
+    margin-top:12px;
+    font-size:13px;
+    line-height:1.8;
 }
 
-.progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg,var(--blue),var(--green));
-    transition: 1s;
-}
+/* PHOTOS */
 
-.about {
-    background: #0b1c36;
-    text-align: center;
+.photo-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:10px;
 }
 
-.about p {
-    max-width: 800px;
-    margin: auto;
-    color: var(--muted);
-    line-height: 1.9;
+.photo-grid img {
+    width:100%;
+    height:100px;
+    object-fit:cover;
+    border-radius:8px;
 }
 
-footer {
-    padding: 35px 7%;
-    text-align: center;
-    background: #050e1e;
-    border-top: 1px solid #244466;
-}
+/* MOBILE */
 
-footer p {
-    color: var(--muted);
-    line-height: 2;
-}
+@media(max-width:650px) {
 
-.designer {
-    color: var(--cyan);
-    font-weight: bold;
-}
+    .sidebar {
+        width:205px;
+        top:135px;
+        left:7px;
+        padding:10px;
+        max-height:calc(100vh - 155px);
+    }
 
-.back-top {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 48px;
-    height: 48px;
-    border: none;
-    background: var(--blue);
-    color: white;
-    border-radius: 50%;
-    font-size: 22px;
-    cursor: pointer;
-    display: none;
-    z-index: 999;
-}
+    .menu-button {
+        padding:11px 8px;
+        font-size:12px;
+    }
 
-@media(max-width:750px) {
-    header {
-        padding: 15px 5%;
+    .info-panel {
+        right:7px;
+        width:190px;
+        top:135px;
+        padding:10px;
+        max-height:calc(100vh - 155px);
     }
 
     .logo {
-        font-size: 17px;
+        font-size:16px;
     }
 
-    nav {
-        display: none;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        background: #0b1c36;
-        padding: 25px;
-        flex-direction: column;
-        border-bottom: 1px solid #345;
+    .status {
+        display:none;
     }
 
-    nav.show {
-        display: flex;
+    .search-box {
+        top:76px;
     }
 
-    .menu {
-        display: block;
+    .search-box input {
+        padding:13px;
     }
 
-    .hero {
-        flex-direction: column;
-        padding: 65px 6%;
-        text-align: center;
-    }
-
-    .code-animation {
-        width: 100%;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-    }
-
-    section {
-        padding: 60px 5%;
-    }
-
-    .section-title {
-        font-size: 29px;
-    }
-
-    .btn-outline {
-        margin: 12px 0 0;
-    }
-
-    .editor-top {
-        flex-wrap: wrap;
-    }
-}
-</style></head><body><header>
-    <div class="logo">🚀 ENCOURAGING <span>YOUNG PROGRAMMERS</span></div><button class="menu" onclick="toggleMenu()">☰</button>
-
-<nav id="navigation">
-    <a href="#home">Home</a>
-    <a href="#courses">Courses</a>
-    <a href="#lessons">Lessons</a>
-    <a href="#playground">Code Editor</a>
-    <a href="#quiz">Quiz</a>
-    <a href="#about">About</a>
-</nav>
-
-</header><!-- HOME --><div class="hero" id="home"><div class="hero-content">
-    <h1>Learn to Code.<br>
-    <span>Build the Future.</span></h1>
-
-    <p>
-        Welcome to Encouraging Young Programmers!
-        Your free online learning centre where young people
-        discover programming, develop digital skills and turn
-        their creative ideas into reality.
-    </p>
-
-    <a href="#courses" class="btn">Start Learning Free →</a>
-    <a href="#playground" class="btn btn-outline">Try Coding</a>
-
-    <div class="stats">
-        <div class="stat">
-            <h2>100%</h2>
-            <p>Free Learning</p>
-        </div>
-        <div class="stat">
-            <h2>4+</h2>
-            <p>Programming Topics</p>
-        </div>
-        <div class="stat">
-            <h2>∞</h2>
-            <p>Possibilities</p>
-        </div>
-    </div>
-</div>
-
-<div class="code-animation">
-    <div class="dots">
-        <div class="dot red"></div>
-        <div class="dot yellow"></div>
-        <div class="dot green"></div>
-    </div>
-
-<pre>
-<span class="comment">// Welcome to programming!</span>
-
-<span class="keyword">const</span> future = "Bright";
-
-<span class="keyword">function</span> learnCoding() {
-  console.log(
-    "Hello, Young Programmer!"
-  );
-
-  <span class="keyword">return</span> future;
 }
 
-learnCoding();
-
-<span class="comment">// Keep building! 🚀</span>
-<span class="cursor">|</span>
-</pre></div>
-
-</div><!-- COURSES --><section class="courses" id="courses"><h2 class="section-title">Explore Our Free Courses</h2>
-
-<p class="section-subtitle">
-    Choose a programming language and begin your journey.
-    No previous experience is required.
-</p>
-
-<div class="course-grid">
-
-    <div class="course">
-        <div class="course-icon">🌐</div>
-        <h3>HTML</h3>
-        <p>Learn how to create the structure of websites using HTML.</p>
-        <button class="btn" onclick="openLesson('html')">Start HTML</button>
-    </div>
-
-    <div class="course">
-        <div class="course-icon">🎨</div>
-        <h3>CSS</h3>
-        <p>Discover how to design beautiful websites with colours, layouts and animations.</p>
-        <button class="btn" onclick="openLesson('css')">Start CSS</button>
-    </div>
-
-    <div class="course">
-        <div class="course-icon">⚡</div>
-        <h3>JavaScript</h3>
-        <p>Make websites interactive with buttons, calculations and animations.</p>
-        <button class="btn" onclick="openLesson('javascript')">Start JavaScript</button>
-    </div>
-
-    <div class="course">
-        <div class="course-icon">🐍</div>
-        <h3>Python</h3>
-        <p>Learn one of the most popular programming languages in the world.</p>
-        <button class="btn" onclick="openLesson('python')">Start Python</button>
-    </div>
-
-</div>
-
-</section><!-- LESSONS --><section class="lessons" id="lessons"><h2 class="section-title">Programming Lessons</h2>
-
-<p class="section-subtitle">
-    Simple explanations and examples to help you understand programming.
-</p>
-
-<div class="lesson-box">
-
-    <h3 id="lesson-title">Lesson 1: Introduction to HTML</h3>
-
-    <p id="lesson-description">
-        HTML stands for HyperText Markup Language.
-        It is used to create the structure of websites.
-        Every website you visit uses HTML.
-    </p>
-
-    <div class="lesson-code">
-        <pre id="lesson-example">&lt;!DOCTYPE html&gt;
-
-<html>
-<head>
-<title>My First Website</title>
+</style>
 </head>
+
 <body>
-<h1>Hello World!</h1>
-<p>I am learning programming.</p>
-</body>
-</html></pre>
-</div>
 
-    <p id="lesson-explanation">
-        The h1 tag creates a large heading.
-        The p tag creates a paragraph.
-    </p>
+<div id="app">
 
-    <button class="btn" onclick="markCompleted()">Mark Lesson Completed ✓</button>
+<header>
 
-    <button class="btn btn-outline" onclick="nextLesson()">Next Lesson →</button>
-
-</div>
-
-<div class="progress-container">
-    <p>Your learning progress: <strong id="progress-text">0%</strong></p>
-    <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
-    </div>
-</div>
-
-</section><!-- PLAYGROUND --><section class="playground" id="playground"><h2 class="section-title">Interactive Coding Playground</h2>
-
-<p class="section-subtitle">
-    Write your own code, press RUN and see what happens!
-    This is where your programming journey becomes practical.
-</p>
-
-<div class="editor">
-
-    <div class="editor-top">
-        <strong>💻 My Coding Studio</strong>
-
-        <select id="language" onchange="changeLanguage()">
-            <option value="html">HTML</option>
-            <option value="javascript">JavaScript</option>
-        </select>
-
-        <button class="btn" onclick="runCode()">▶ RUN CODE</button>
+    <div class="logo">
+        <i class="fa-solid fa-earth-africa"></i>
+        GLOBE EXPLORER
     </div>
 
-    <div class="editor-body">
+    <div class="header-right">
+        <span class="status">
+            <i class="fa-solid fa-circle"></i>
+            WORLDWIDE MAP
+        </span>
 
-<textarea id="codeInput" spellcheck="false"><!DOCTYPE html>
-<html>
-<head>
-    <title>My First Page</title>
-</head>
-<body>
-    <h1 style="color:blue;">Hello World!</h1>
-    <p>I am a young programmer.</p>
-    <button onclick="alert('Well done!')">
-        Click Me
+        <i class="fa-solid fa-globe"
+        style="font-size:22px;color:#f6c453"></i>
+    </div>
+
+</header>
+
+
+<!-- SEARCH -->
+
+<div class="search-box">
+
+    <input id="searchInput"
+    type="search"
+    placeholder="Search any city, country, street or landmark...">
+
+    <button onclick="searchLocation()">
+        <i class="fa-solid fa-magnifying-glass"></i>
     </button>
-</body>
-</html></textarea>        <h3 class="output-title">Live Output</h3>
 
-        <iframe id="output" title="Your code output" sandbox="allow-scripts"></iframe>
-
-    </div>
 </div>
 
-</section><!-- QUIZ --><section id="quiz"><h2 class="section-title">Test Your Knowledge</h2>
 
-<p class="section-subtitle">
-    Answer these questions and see how much you have learned.
-</p>
+<!-- MAP -->
 
-<div class="quiz">
+<div id="map"></div>
 
-    <h3 id="question">Question 1: What does HTML stand for?</h3>
 
-    <div id="options"></div>
+<!-- SIDEBAR -->
 
-    <p id="quiz-result"></p>
+<div class="sidebar">
 
-    <button class="btn" onclick="nextQuestion()">Next Question →</button>
+    <h3><i class="fa-solid fa-layer-group"></i> MAP EXPLORER</h3>
 
-    <p style="margin-top:20px;color:#b6c6df">
-        Score: <span id="score">0</span>
+    <button class="menu-button active"
+    onclick="changeMap('street',this)">
+        <i class="fa-solid fa-map"></i>
+        Standard Map
+    </button>
+
+    <button class="menu-button"
+    onclick="changeMap('satellite',this)">
+        <i class="fa-solid fa-satellite"></i>
+        Satellite View
+    </button>
+
+    <button class="menu-button"
+    onclick="changeMap('terrain',this)">
+        <i class="fa-solid fa-mountain"></i>
+        Terrain View
+    </button>
+
+    <button class="menu-button"
+    onclick="changeMap('hybrid',this)">
+        <i class="fa-solid fa-earth-americas"></i>
+        Hybrid View
+    </button>
+
+    <div class="section">
+
+        <h3>LOCATION TOOLS</h3>
+
+        <button class="menu-button"
+        onclick="myLocation()">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            My Location
+        </button>
+
+        <button class="menu-button"
+        onclick="openRoute()">
+            <i class="fa-solid fa-route"></i>
+            Calculate Distance
+        </button>
+
+        <button class="menu-button"
+        onclick="openPhotos()">
+            <i class="fa-solid fa-images"></i>
+            Place Photographs
+        </button>
+
+    </div>
+
+    <div class="section">
+
+        <h3>OTHER SERVICES</h3>
+
+        <button class="menu-button"
+        onclick="openPhone()">
+            <i class="fa-solid fa-phone"></i>
+            Phone Information
+        </button>
+
+        <button class="menu-button"
+        onclick="shareLocation()">
+            <i class="fa-solid fa-share-nodes"></i>
+            Share My Location
+        </button>
+
+        <button class="menu-button"
+        onclick="resetMap()">
+            <i class="fa-solid fa-globe"></i>
+            World View
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- INFORMATION -->
+
+<div class="info-panel" id="infoPanel">
+
+    <span class="close" onclick="closeInfo()">×</span>
+
+    <h3 id="placeTitle">Location Information</h3>
+
+    <p id="placeDetails">
+        Search for a location to see information.
+    </p>
+
+    <button class="action-btn" onclick="openStreetView()">
+        <i class="fa-solid fa-street-view"></i>
+        Explore Street View
+    </button>
+
+    <button class="action-btn" onclick="openGoogleMaps()">
+        <i class="fa-solid fa-map-location-dot"></i>
+        Open Google Maps
+    </button>
+
+    <div id="photos"></div>
+
+</div>
+
+
+<!-- ROUTE PANEL -->
+
+<div class="route-panel" id="routePanel">
+
+    <span class="close"
+    onclick="closeRoute()">×</span>
+
+    <h3>
+        <i class="fa-solid fa-route"></i>
+        Journey Planner
+    </h3>
+
+    <input id="startLocation"
+    placeholder="Starting location or use my GPS">
+
+    <input id="endLocation"
+    placeholder="Destination">
+
+    <select id="travelMode">
+
+        <option value="foot-walking">Walking / Trekking</option>
+
+        <option value="cycling-regular">Bicycling</option>
+
+        <option value="driving-car">Car / Motorcycle</option>
+
+    </select>
+
+    <button class="action-btn"
+    onclick="useGPSForRoute()">
+        <i class="fa-solid fa-location-crosshairs"></i>
+        Use My Current Location
+    </button>
+
+    <button class="action-btn"
+    onclick="calculateRoute()">
+        Calculate Journey
+    </button>
+
+    <div id="routeResult"></div>
+
+    <p style="font-size:11px;margin-top:10px;color:#aaa">
+        Walking, cycling and driving routes require an
+        OpenRouteService API key.
     </p>
 
 </div>
 
-</section><!-- ABOUT --><section class="about" id="about"><h2 class="section-title">About Our Mission</h2>
 
-<p>
-    Encouraging Young Programmers is an educational initiative
-    created to encourage young people to discover the world
-    of technology and programming.
+<!-- PHONE PANEL -->
 
-    We believe that every young person has the potential
-    to become a programmer, software developer, website
-    designer or technology innovator.
+<div class="phone-panel" id="phonePanel">
 
-    Our mission is to make programming education accessible,
-    understandable and free for everyone.
-</p>
+    <span class="close"
+    onclick="closePhone()">×</span>
 
-<br>
+    <h3>
+        <i class="fa-solid fa-phone"></i>
+        Phone Information
+    </h3>
 
-<h2 style="color:#00d9ff;margin-bottom:15px;">
-    Our Motto
-</h2>
+    <p style="font-size:12px;line-height:1.6;margin-bottom:12px">
+        Enter a phone number to identify its country,
+        calling code and publicly available number information.
+        This service cannot locate or track the owner.
+    </p>
 
-<p style="font-size:22px;font-weight:bold;">
-    "Learn Today. Innovate Tomorrow."
-</p>
+    <input id="phoneNumber"
+    type="tel"
+    placeholder="Example: +2348012345678">
 
-</section><!-- FOOTER --><footer><h2 style="color:#00d9ff;margin-bottom:15px;">
-    ENCOURAGING YOUNG PROGRAMMERS
-</h2>
+    <button class="action-btn"
+    onclick="lookupPhone()">
+        Search Phone Information
+    </button>
 
-<p>
-    Empowering the next generation through free programming education.
-</p>
+    <div class="phone-result" id="phoneResult">
+        Results will appear here.
+    </div>
 
-<p>
-    Designed by <span class="designer">Ahmad bin Muhammad Yusuf</span>
-</p>
+</div>
 
-<p>
-    © <span id="year"></span> Encouraging Young Programmers.
-    All Rights Reserved.
-</p>
+</div>
 
-</footer><button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://unpkg.com/@mapbox/polyline@1.2.1/src/polyline.js"></script>
+
+<script src="https://unpkg.com/libphonenumber-js@1.11.20/bundle/libphonenumber-max.js"></script>
+
 
 <script>
 
-// MOBILE MENU
+/* ==================================
+   MAP INITIALIZATION
+================================== */
 
-function toggleMenu() {
-    document.getElementById("navigation").classList.toggle("show");
-}
+const map = L.map('map', {
+    zoomControl:true
+}).setView([9.0820,8.6753],6);
 
-document.querySelectorAll("nav a").forEach(link => {
-    link.addEventListener("click", () => {
-        document.getElementById("navigation").classList.remove("show");
-    });
+
+const street = L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+    attribution:'© OpenStreetMap contributors',
+    maxZoom:19
 });
 
-// YEAR
 
-document.getElementById("year").textContent = new Date().getFullYear();
+const satellite = L.tileLayer(
+'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+{
+    attribution:'Tiles © Esri',
+    maxZoom:19
+});
 
-// COURSE LESSONS
 
-const lessons = {
+const terrain = L.tileLayer(
+'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+{
+    attribution:'© OpenTopoMap',
+    maxZoom:17
+});
 
-html: {
-title: "HTML: Introduction to Web Development",
-description: "HTML means HyperText Markup Language. It provides the basic structure of a website.",
-example: `<h1>Welcome!</h1>
-<p>This is my first website.</p>
-<button>Click Me</button>`,
-explanation: "The h1 tag creates a heading. The p tag creates a paragraph, and the button tag creates a button."
-},
 
-css: {
-title: "CSS: Designing Websites",
-description: "CSS means Cascading Style Sheets. It controls how websites look, including colours, sizes and layouts.",
-example: `h1 {
-  color: blue;
-  font-size: 40px;
-}
+const labels = L.tileLayer(
+'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+{
+    attribution:'Esri labels',
+    maxZoom:19
+});
 
-p {
-  color: green;
-}`,
-explanation: "The color property changes text colour. The font-size property changes the size of text."
-},
 
-javascript: {
-title: "JavaScript: Making Websites Interactive",
-description: "JavaScript allows you to make websites respond to users and perform different actions.",
-example: `let name = "Programmer";
+street.addTo(map);
 
-function greet() {
-  alert("Welcome " + name);
-}
 
-greet();`,
-explanation: "A variable stores information. A function contains instructions that can be executed when called."
-},
+function changeMap(type,button) {
 
-python: {
-title: "Python: Your First Programming Language",
-description: "Python is a popular programming language used in artificial intelligence, automation, data science and software development.",
-example: `name = "Young Programmer"
+    map.removeLayer(street);
+    map.removeLayer(satellite);
+    map.removeLayer(terrain);
+    map.removeLayer(labels);
 
-print("Hello " + name)
+    document.querySelectorAll('.menu-button')
+    .forEach(b=>b.classList.remove('active'));
 
-age = 15
+    if(button) button.classList.add('active');
 
-print(age)`,
-explanation: "The print() function displays information. Variables store information for your programme."
-}
-
-};
-
-let currentCourse = "html";
-let completed = JSON.parse(localStorage.getItem("completedLessons") || "[]");
-
-function openLesson(course) {
-
-    currentCourse = course;
-
-    const lesson = lessons[course];
-
-    document.getElementById("lesson-title").textContent = lesson.title;
-
-    document.getElementById("lesson-description").textContent = lesson.description;
-
-    document.getElementById("lesson-example").textContent = lesson.example;
-
-    document.getElementById("lesson-explanation").textContent = lesson.explanation;
-
-    document.getElementById("lessons").scrollIntoView({behavior:"smooth"});
-
-}
-
-function markCompleted() {
-
-    if (!completed.includes(currentCourse)) {
-        completed.push(currentCourse);
+    if(type==='street') {
+        street.addTo(map);
     }
 
-    localStorage.setItem("completedLessons", JSON.stringify(completed));
+    if(type==='satellite') {
+        satellite.addTo(map);
+    }
 
-    updateProgress();
+    if(type==='terrain') {
+        terrain.addTo(map);
+    }
 
-    alert("Congratulations! You completed this course lesson.");
-
-}
-
-function updateProgress() {
-
-    let percent = Math.round((completed.length / 4) * 100);
-
-    document.getElementById("progress-text").textContent = percent + "%";
-
-    document.getElementById("progress-fill").style.width = percent + "%";
-
-}
-
-function nextLesson() {
-
-    const courses = ["html","css","javascript","python"];
-
-    let index = courses.indexOf(currentCourse);
-
-    let next = courses[(index + 1) % courses.length];
-
-    openLesson(next);
-
-}
-
-updateProgress();
-
-// CODE EDITOR
-
-const defaultHTML = document.getElementById("codeInput").value;
-
-function changeLanguage() {
-
-    let language = document.getElementById("language").value;
-
-    if (language === "html") {
-
-        document.getElementById("codeInput").value = defaultHTML;
-
-    } else {
-
-        document.getElementById("codeInput").value =
-`// My first JavaScript programme
-
-let name = "Young Programmer";
-
-console.log("Hello " + name);
-
-document.body.innerHTML =
-"<h1>Hello Young Programmer!</h1>" +
-"<p>You are learning JavaScript.</p>";`;
-
+    if(type==='hybrid') {
+        satellite.addTo(map);
+        labels.addTo(map);
     }
 
 }
 
-function runCode() {
 
-    const language = document.getElementById("language").value;
+/* ==================================
+   LOCATION SEARCH
+================================== */
 
-    const code = document.getElementById("codeInput").value;
+let currentPlace = null;
+let currentMarker = null;
+let userPosition = null;
+let routeLayer = null;
 
-    const frame = document.getElementById("output");
 
-    if (language === "html") {
+async function searchLocation() {
 
-        frame.srcdoc = code;
+    const query =
+    document.getElementById('searchInput').value.trim();
 
-    } else {
-
-        frame.srcdoc = `
-        <!DOCTYPE html>
-        <html>
-        <body>
-        <h3>JavaScript Output</h3>
-        <pre id="result"></pre>    <script>
-    const result = document.getElementById("result");
-
-    const originalLog = console.log;
-
-    console.log = (...args) => {
-        result.textContent += args.join(" ") + "\\n";
-    };
+    if(!query) {
+        alert('Enter a location first.');
+        return;
+    }
 
     try {
-        ${code}
-    } catch(error) {
-        result.textContent += "Error: " + error.message;
+
+        const response = await fetch(
+        'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='
+        +encodeURIComponent(query)
+        );
+
+        const data = await response.json();
+
+        if(!data.length) {
+            alert('Location not found. Try another search.');
+            return;
+        }
+
+        const place = data[0];
+
+        showPlace(place);
+
     }
-    <\/script>
-    </body>
-    </html>`;
+
+    catch(error) {
+        alert('Unable to search. Check your internet connection.');
+    }
 
 }
 
-}
 
-// RUN INITIAL CODE
+document.getElementById('searchInput')
+.addEventListener('keydown',function(e) {
 
-runCode();
-
-// QUIZ SYSTEM
-
-const questions = [
-
-{
-q: "What does HTML stand for?",
-options: [
-"HyperText Markup Language",
-"HighText Machine Language",
-"Hyper Transfer Main Language",
-"Home Tool Markup Language"
-],
-answer: 0
-},
-
-{
-q: "Which language is mainly used to style websites?",
-options: ["Python","CSS","Java","C++"],
-answer: 1
-},
-
-{
-q: "Which programming language is commonly used to make websites interactive?",
-options: ["HTML","CSS","JavaScript","XML"],
-answer: 2
-},
-
-{
-q: "Which function displays information in Python?",
-options: ["show()","display()","print()","write()"],
-answer: 2
-},
-
-{
-q: "What is a variable used for?",
-options: [
-"To store information",
-"To switch off a computer",
-"To delete a website",
-"To charge a battery"
-],
-answer: 0
-}
-
-];
-
-let questionIndex = 0;
-let score = 0;
-let answered = false;
-
-function loadQuestion() {
-
-answered = false;
-
-const q = questions[questionIndex];
-
-document.getElementById("question").textContent =
-"Question " + (questionIndex + 1) + ": " + q.q;
-
-document.getElementById("quiz-result").textContent = "";
-
-const options = document.getElementById("options");
-
-options.innerHTML = "";
-
-q.options.forEach((option,index) => {
-
-    const button = document.createElement("button");
-
-    button.className = "option";
-
-    button.textContent = option;
-
-    button.onclick = () => checkAnswer(index);
-
-    options.appendChild(button);
+    if(e.key==='Enter') searchLocation();
 
 });
 
-}
 
-function checkAnswer(index) {
+function showPlace(place) {
 
-if (answered) return;
+    const lat = Number(place.lat);
+    const lon = Number(place.lon);
 
-answered = true;
+    currentPlace = {
+        lat:lat,
+        lon:lon,
+        name:place.display_name
+    };
 
-const correct = questions[questionIndex].answer;
+    map.setView([lat,lon],17);
 
-if (index === correct) {
+    if(currentMarker) {
+        map.removeLayer(currentMarker);
+    }
 
-    score++;
+    currentMarker = L.marker([lat,lon])
+    .addTo(map)
+    .bindPopup(place.display_name)
+    .openPopup();
 
-    document.getElementById("quiz-result").textContent =
-    "Correct! Excellent work! 🎉";
+    document.getElementById('placeTitle')
+    .textContent='Location Details';
 
-} else {
+    document.getElementById('placeDetails')
+    .innerHTML=`
+    <b>Place:</b> ${escapeHTML(place.display_name)}
+    <br><br>
+    <b>Latitude:</b> ${lat}
+    <br>
+    <b>Longitude:</b> ${lon}
+    <br><br>
+    <b>Category:</b> ${escapeHTML(place.type || 'Location')}
+    <br><br>
+    <b>Map coordinates:</b> Available
+    `;
 
-    document.getElementById("quiz-result").textContent =
-    "Not quite! The correct answer is: " +
-    questions[questionIndex].options[correct];
+    document.getElementById('infoPanel')
+    .style.display='block';
 
-}
-
-document.getElementById("score").textContent = score;
-
-}
-
-function nextQuestion() {
-
-if (!answered) {
-    alert("Please select an answer first.");
-    return;
-}
-
-questionIndex++;
-
-if (questionIndex >= questions.length) {
-
-    document.getElementById("question").textContent =
-    "Quiz Completed!";
-
-    document.getElementById("options").innerHTML = "";
-
-    document.getElementById("quiz-result").textContent =
-    "Your final score is " + score + " out of " +
-    questions.length + ". " +
-    (score >= 4 ? "Excellent programming knowledge!" :
-    "Keep practising. You can do it!");
-
-    questionIndex = -1;
-
-    return;
+    loadPhotos(place.display_name);
 
 }
 
-loadQuestion();
+
+function escapeHTML(value) {
+
+    return String(value).replace(/[&<>"']/g,function(c) {
+        return {
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#39;'
+        }[c];
+    });
 
 }
 
-loadQuestion();
 
-// BACK TO TOP
+/* ==================================
+   MY LOCATION
+================================== */
 
-window.addEventListener("scroll", () => {
+function myLocation() {
 
-document.getElementById("backTop").style.display =
-window.scrollY > 400 ? "block" : "none";
+    if(!navigator.geolocation) {
+        alert('GPS is not supported by this browser.');
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            const lat=position.coords.latitude;
+            const lon=position.coords.longitude;
+
+            userPosition={lat,lon};
+
+            map.setView([lat,lon],18);
+
+            L.marker([lat,lon])
+            .addTo(map)
+            .bindPopup('Your current location')
+            .openPopup();
+
+            L.circle([lat,lon],{
+                radius:position.coords.accuracy,
+                color:'#087cf0'
+            }).addTo(map);
+
+            alert('Your current location has been found.');
+
+        },
+
+        function() {
+            alert('Location permission denied or unavailable.');
+        },
+
+        {
+            enableHighAccuracy:true,
+            timeout:15000
+        }
+
+    );
+
+}
+
+
+/* ==================================
+   STREET VIEW
+================================== */
+
+function openStreetView() {
+
+    if(!currentPlace) return;
+
+    const url =
+    'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='
+    +currentPlace.lat+','+currentPlace.lon;
+
+    window.open(url,'_blank');
+
+}
+
+
+/* ==================================
+   GOOGLE MAPS
+================================== */
+
+function openGoogleMaps() {
+
+    if(!currentPlace) return;
+
+    window.open(
+    'https://www.google.com/maps/search/?api=1&query='
+    +currentPlace.lat+','+currentPlace.lon,
+    '_blank'
+    );
+
+}
+
+
+/* ==================================
+   PHOTOGRAPHS
+================================== */
+
+async function loadPhotos(placeName) {
+
+    const container =
+    document.getElementById('photos');
+
+    container.innerHTML='<p>Loading related photographs...</p>';
+
+    try {
+
+        const url =
+        'https://commons.wikimedia.org/w/api.php?action=query'
+        +'&generator=search'
+        +'&gsrsearch='+encodeURIComponent(placeName)
+        +'&gsrnamespace=6'
+        +'&gsrlimit=8'
+        +'&prop=imageinfo'
+        +'&iiprop=url'
+        +'&iiurlwidth=300'
+        +'&format=json'
+        +'&origin=*';
+
+        const response=await fetch(url);
+
+        const data=await response.json();
+
+        const pages=data.query?.pages;
+
+        if(!pages) {
+            container.innerHTML='<p>No related photographs found.</p>';
+            return;
+        }
+
+        let html='<h3 style="margin-top:15px">Related Photographs</h3><div class="photo-grid">';
+
+        Object.values(pages).forEach(page=> {
+
+            const image=page.imageinfo?.[0]?.thumburl;
+
+            if(image) {
+
+                html+=`
+                <a href="${image}" target="_blank">
+                    <img src="${image}" alt="Related photograph">
+                </a>
+                `;
+
+            }
+
+        });
+
+        html+='</div>';
+
+        container.innerHTML=html;
+
+    }
+
+    catch(error) {
+
+        container.innerHTML=
+        '<p>Photographs could not be loaded.</p>';
+
+    }
+
+}
+
+
+function openPhotos() {
+
+    if(!currentPlace) {
+        alert('Search for a location first.');
+        return;
+    }
+
+    document.getElementById('infoPanel').style.display='block';
+
+    loadPhotos(currentPlace.name);
+
+}
+
+
+/* ==================================
+   ROUTE PLANNER
+================================== */
+
+function openRoute() {
+
+    document.getElementById('routePanel')
+    .style.display='block';
+
+}
+
+
+function closeRoute() {
+
+    document.getElementById('routePanel')
+    .style.display='none';
+
+}
+
+
+function closeInfo() {
+
+    document.getElementById('infoPanel')
+    .style.display='none';
+
+}
+
+
+function useGPSForRoute() {
+
+    if(!navigator.geolocation) {
+        alert('GPS unavailable.');
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        position=> {
+
+            userPosition={
+                lat:position.coords.latitude,
+                lon:position.coords.longitude
+            };
+
+            document.getElementById('startLocation').value=
+            userPosition.lat+','+userPosition.lon;
+
+            alert('Your GPS position has been added.');
+
+        },
+
+        ()=>alert('Unable to obtain your location.')
+
+    );
+
+}
+
+
+async function geocode(query) {
+
+    const response=await fetch(
+    'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='
+    +encodeURIComponent(query)
+    );
+
+    const data=await response.json();
+
+    if(!data.length) {
+        throw new Error('Could not find: '+query);
+    }
+
+    return [
+        Number(data[0].lon),
+        Number(data[0].lat)
+    ];
+
+}
+
+
+async function calculateRoute() {
+
+    const start =
+    document.getElementById('startLocation').value.trim();
+
+    const end =
+    document.getElementById('endLocation').value.trim();
+
+    const mode =
+    document.getElementById('travelMode').value;
+
+    const result =
+    document.getElementById('routeResult');
+
+    if(!start || !end) {
+        alert('Enter your starting point and destination.');
+        return;
+    }
+
+    const API_KEY='YOUR_OPENROUTESERVICE_API_KEY';
+
+    if(API_KEY==='YOUR_OPENROUTESERVICE_API_KEY') {
+
+        result.innerHTML=`
+        <p style="color:#ffc857;line-height:1.7">
+        You need a free OpenRouteService API key to calculate
+        walking, bicycle and driving routes.
+        </p>
+        <button class="action-btn"
+        onclick="window.open('https://openrouteservice.org/dev/#/signup','_blank')">
+        Get API Key
+        </button>
+        `;
+
+        return;
+    }
+
+    result.innerHTML='Calculating route...';
+
+    try {
+
+        const startCoords=await geocode(start);
+        const endCoords=await geocode(end);
+
+        const response=await fetch(
+        'https://api.openrouteservice.org/v2/directions/'
+        +mode+'/geojson',
+        {
+            method:'POST',
+
+            headers:{
+                'Authorization':API_KEY,
+                'Content-Type':'application/json'
+            },
+
+            body:JSON.stringify({
+                coordinates:[startCoords,endCoords]
+            })
+
+        });
+
+        if(!response.ok) {
+            throw new Error('Route service error.');
+        }
+
+        const data=await response.json();
+
+        const feature=data.features[0];
+
+        const coordinates=feature.geometry.coordinates;
+
+        if(routeLayer) {
+            map.removeLayer(routeLayer);
+        }
+
+        routeLayer=L.geoJSON(feature,{
+            style:{
+                color:'#087cf0',
+                weight:6,
+                opacity:.9
+            }
+        }).addTo(map);
+
+        map.fitBounds(routeLayer.getBounds(),{
+            padding:[50,50]
+        });
+
+        const summary=feature.properties.summary;
+
+        const distance=(summary.distance/1000).toFixed(2);
+
+        const minutes=Math.round(summary.duration/60);
+
+        result.innerHTML=`
+        <div style="background:#ffffff15;padding:13px;border-radius:9px;margin-top:12px">
+
+        <h3 style="color:#42e6a4">Journey Calculated!</h3>
+
+        <p style="margin-top:10px">
+        <b>Distance:</b> ${distance} km
+        </p>
+
+        <p>
+        <b>Estimated duration:</b> ${minutes} minutes
+        </p>
+
+        <p>
+        <b>Travel mode:</b> ${mode}
+        </p>
+
+        </div>
+        `;
+
+    }
+
+    catch(error) {
+
+        result.innerHTML=
+        '<p style="color:#ff8888">Unable to calculate this route. Check your API key and internet connection.</p>';
+
+    }
+
+}
+
+
+/* ==================================
+   PHONE INFORMATION
+================================== */
+
+function openPhone() {
+
+    document.getElementById('phonePanel')
+    .style.display='block';
+
+}
+
+
+function closePhone() {
+
+    document.getElementById('phonePanel')
+    .style.display='none';
+
+}
+
+
+function lookupPhone() {
+
+    const number =
+    document.getElementById('phoneNumber').value.trim();
+
+    const output =
+    document.getElementById('phoneResult');
+
+    if(!number) {
+
+        alert('Enter a phone number.');
+
+        return;
+
+    }
+
+    try {
+
+        const parsed =
+        libphonenumber.parsePhoneNumberFromString(
+            number,
+            'NG'
+        );
+
+        if(!parsed || !parsed.isValid()) {
+
+            output.innerHTML=
+            '<span style="color:#ff8888">Invalid or unrecognized phone number. Include the country code where possible.</span>';
+
+            return;
+
+        }
+
+        output.innerHTML=`
+
+        <b>Number:</b> ${escapeHTML(parsed.formatInternational())}
+
+        <br>
+
+        <b>Country:</b> ${escapeHTML(parsed.country || 'Unknown')}
+
+        <br>
+
+        <b>Calling code:</b> +${parsed.countryCallingCode}
+
+        <br>
+
+        <b>Number type:</b> ${escapeHTML(parsed.getType() || 'Unknown')}
+
+        <br>
+
+        <b>Validity:</b>
+        <span style="color:#42e6a4">Valid format</span>
+
+        <br><br>
+
+        <span style="color:#ffc857">
+        Note: This information does not reveal the owner's identity,
+        live location, private profile or physical surroundings.
+        </span>
+
+        `;
+
+    }
+
+    catch(error) {
+
+        output.innerHTML='Unable to process this number.';
+
+    }
+
+}
+
+
+/* ==================================
+   SHARE LOCATION
+================================== */
+
+function shareLocation() {
+
+    if(!navigator.geolocation) {
+        alert('GPS unavailable.');
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async position=> {
+
+            const lat=position.coords.latitude;
+            const lon=position.coords.longitude;
+
+            const link=
+            'https://www.google.com/maps?q='+lat+','+lon;
+
+            try {
+
+                await navigator.clipboard.writeText(link);
+
+                alert('Your location link has been copied. You can now share it with someone.');
+
+            }
+
+            catch(error) {
+
+                prompt('Copy your location link:',link);
+
+            }
+
+        },
+
+        ()=>alert('Please allow location access.')
+
+    );
+
+}
+
+
+/* ==================================
+   WORLD VIEW
+================================== */
+
+function resetMap() {
+
+    map.setView([20,0],2);
+
+}
+
+
+/* ==================================
+   MAP CLICK
+================================== */
+
+map.on('click',async function(e) {
+
+    const lat=e.latlng.lat;
+    const lon=e.latlng.lng;
+
+    try {
+
+        const response=await fetch(
+        'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='
+        +lat+'&lon='+lon
+        );
+
+        const data=await response.json();
+
+        if(data.display_name) {
+
+            const place={
+                lat:lat,
+                lon:lon,
+                display_name:data.display_name,
+                type:data.type || 'Selected location'
+            };
+
+            showPlace(place);
+
+        }
+
+    }
+
+    catch(error) {
+
+        currentPlace={
+            lat:lat,
+            lon:lon,
+            name:'Selected map location'
+        };
+
+        document.getElementById('infoPanel')
+        .style.display='block';
+
+        document.getElementById('placeTitle')
+        .textContent='Selected Location';
+
+        document.getElementById('placeDetails')
+        .textContent='Latitude: '+lat+' Longitude: '+lon;
+
+    }
 
 });
 
-</script></body>
+
+/* ==================================
+   INITIAL SETTINGS
+================================== */
+
+map.zoomControl.setPosition('bottomright');
+
+console.log('Globe Explorer successfully initialized.');
+
+</script>
+
+</body>
 </html>
