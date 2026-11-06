@@ -5,21 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0756a5">
 
-<title>Globe Explorer | World Navigation</title>
+<title>Globe Explorer | Explore the Earth</title>
 
 <link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+href="https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.css">
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.js"></script>
 
 <style>
-
 :root {
     --navy:#061a35;
     --blue:#0878e8;
     --gold:#e7b94d;
+    --ocean:#0878c9;
     --light:#edf5ff;
-    --border:#dce6f2;
 }
 
 * {
@@ -30,27 +29,21 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 body {
     font-family:Arial,sans-serif;
-    background:#0878c9;
+    background:var(--ocean);
     color:#17243a;
-}
-
-button {
-    border:0;
-    cursor:pointer;
-    font-family:inherit;
-    font-weight:600;
+    overflow:hidden;
 }
 
 header {
-    height:65px;
+    height:66px;
     background:var(--navy);
     color:white;
     display:flex;
-    align-items:center;
     justify-content:space-between;
-    padding:0 15px;
+    align-items:center;
+    padding:0 14px;
     position:relative;
-    z-index:1000;
+    z-index:20;
 }
 
 .brand {
@@ -60,13 +53,13 @@ header {
 }
 
 .logo {
-    width:40px;
-    height:40px;
-    border-radius:50%;
+    width:42px;
+    height:42px;
     background:linear-gradient(135deg,#168aff,#064a9d);
+    border-radius:50%;
     display:grid;
     place-items:center;
-    font-size:23px;
+    font-size:24px;
 }
 
 .brand h1 {
@@ -85,16 +78,23 @@ header {
     gap:7px;
 }
 
+button {
+    border:0;
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:600;
+}
+
 .header-btn {
     background:#ffffff20;
     color:white;
-    padding:10px 12px;
+    padding:10px;
     border-radius:8px;
 }
 
 #app {
-    height:calc(100vh - 65px);
     display:flex;
+    height:calc(100vh - 66px);
     position:relative;
 }
 
@@ -103,25 +103,25 @@ header {
     flex-shrink:0;
     background:white;
     overflow-y:auto;
-    z-index:500;
-    border-right:1px solid var(--border);
+    z-index:10;
+    border-right:1px solid #dce6f2;
 }
 
 .section {
     padding:16px;
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid #e4eaf2;
 }
 
 .section h2 {
     font-size:14px;
-    margin-bottom:12px;
     color:var(--navy);
+    margin-bottom:12px;
 }
 
 input {
     width:100%;
     padding:12px;
-    border:1px solid #d5dfeb;
+    border:1px solid #d6e0eb;
     border-radius:9px;
     outline:none;
     font-size:14px;
@@ -135,14 +135,14 @@ input:focus {
 .primary {
     background:var(--blue);
     color:white;
-    padding:12px;
+    padding:11px;
     border-radius:8px;
 }
 
 .secondary {
     background:#eaf3ff;
     color:#0755a5;
-    padding:11px;
+    padding:10px;
     border-radius:8px;
 }
 
@@ -150,21 +150,7 @@ input:focus {
     width:100%;
 }
 
-.button-grid {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-}
-
-.action-btn {
-    background:#edf4fc;
-    color:#15365c;
-    border-radius:8px;
-    padding:12px 5px;
-    font-size:12px;
-}
-
-.layer-grid {
+.grid {
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
@@ -174,7 +160,7 @@ input:focus {
     background:#f1f5fa;
     border:1px solid #dce5ef;
     border-radius:9px;
-    padding:13px 5px;
+    padding:12px 5px;
     color:#193657;
     font-size:12px;
 }
@@ -188,13 +174,20 @@ input:focus {
 .layer-btn.active {
     background:#e4f1ff;
     border:2px solid var(--blue);
-    color:#0755a5;
 }
 
-.info-card {
-    padding:13px;
+.action-btn {
+    background:#edf4fc;
+    color:#15365c;
+    padding:11px 5px;
+    border-radius:8px;
+    font-size:12px;
+}
+
+.info {
     background:#f2f7fc;
     border-radius:9px;
+    padding:12px;
     font-size:13px;
     line-height:1.8;
     overflow-wrap:anywhere;
@@ -203,8 +196,8 @@ input:focus {
 .result {
     padding:11px;
     border-bottom:1px solid #e7edf4;
-    font-size:13px;
     cursor:pointer;
+    font-size:13px;
     line-height:1.5;
 }
 
@@ -214,32 +207,7 @@ input:focus {
 
 .result small {
     display:block;
-    color:#64748b;
-}
-
-#search-results {
-    margin-top:8px;
-}
-
-#route-result {
-    font-size:12px;
-    line-height:1.7;
-    margin-top:12px;
-}
-
-#directions {
-    margin-top:12px;
-}
-
-.direction-item {
-    padding:11px;
-    border-bottom:1px solid #e3eaf2;
-    font-size:12px;
-    line-height:1.6;
-}
-
-.direction-item strong {
-    color:#0755a5;
+    color:#68788d;
 }
 
 #map-area {
@@ -257,12 +225,12 @@ input:focus {
 
 .map-tools {
     position:absolute;
-    right:13px;
-    top:13px;
-    z-index:400;
+    right:12px;
+    top:12px;
     display:flex;
     flex-direction:column;
-    gap:8px;
+    gap:7px;
+    z-index:5;
 }
 
 .map-tool {
@@ -270,40 +238,129 @@ input:focus {
     height:43px;
     border-radius:10px;
     background:white;
-    color:#0c315a;
-    font-size:19px;
+    color:#12345a;
+    font-size:18px;
     box-shadow:0 2px 9px #0003;
+}
+
+.map-tool:active {
+    background:#dcecff;
 }
 
 .map-status {
     position:absolute;
-    bottom:15px;
-    left:13px;
+    bottom:14px;
+    left:12px;
+    z-index:5;
     background:#061a35e8;
     color:white;
-    padding:11px 13px;
+    padding:10px 13px;
     border-radius:8px;
     font-size:11px;
-    z-index:400;
     max-width:85%;
 }
 
-.small-note {
-    font-size:11px;
-    color:#8291a5;
+.photo {
+    width:100%;
+    border-radius:9px;
+    margin-top:10px;
+}
+
+.photo-link {
+    display:block;
+    margin-top:6px;
+    font-size:12px;
+    color:#0878e8;
+    text-decoration:none;
+}
+
+.small {
+    font-size:10px;
+    color:#718096;
+    line-height:1.6;
+}
+
+.compass-card {
+    background:linear-gradient(145deg,#071a35,#123d68);
+    color:white;
+    padding:16px;
+    border-radius:13px;
+    text-align:center;
+}
+
+.compass {
+    width:180px;
+    height:180px;
+    border-radius:50%;
+    border:5px solid #e7b94d;
+    margin:12px auto;
+    position:relative;
+    background:radial-gradient(circle,#164c78,#071a35);
+    box-shadow:0 0 15px #0005;
+}
+
+.compass .direction {
+    position:absolute;
+    color:white;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.north {top:8px;left:50%;transform:translateX(-50%)}
+.south {bottom:8px;left:50%;transform:translateX(-50%)}
+.east {right:9px;top:50%;transform:translateY(-50%)}
+.west {left:9px;top:50%;transform:translateY(-50%)}
+
+.compass-arrow {
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:5px;
+    height:65px;
+    background:linear-gradient(to top,#e7b94d 50%,#fff 50%);
+    transform-origin:50% 100%;
+    transform:translate(-50%,-100%) rotate(0deg);
+    border-radius:5px;
+}
+
+.compass-center {
+    position:absolute;
+    width:15px;
+    height:15px;
+    background:#e7b94d;
+    border:3px solid white;
+    border-radius:50%;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+}
+
+.kaaba {
+    font-size:23px;
+    margin-top:8px;
+}
+
+.qibla-angle {
+    font-size:24px;
+    color:#e7b94d;
+    font-weight:bold;
+}
+
+.route-box {
+    background:#f2f7fc;
+    border-radius:10px;
+    padding:12px;
+    font-size:12px;
     line-height:1.7;
+}
+
+.maplibregl-ctrl-group {
+    border-radius:9px!important;
+    overflow:hidden;
 }
 
 #menu-button {
     display:none;
-}
-
-.leaflet-container {
-    font-family:Arial,sans-serif;
-}
-
-.leaflet-control-attribution {
-    font-size:9px!important;
 }
 
 @media(max-width:800px) {
@@ -337,7 +394,6 @@ input:focus {
     }
 
 }
-
 </style>
 </head>
 
@@ -346,290 +402,275 @@ input:focus {
 <header>
 
     <div class="brand">
-
         <div class="logo">🌍</div>
-
         <div>
             <h1>Globe Explorer</h1>
-            <small>DISCOVER THE WORLD</small>
+            <small>DISCOVER THE EARTH</small>
         </div>
-
     </div>
 
     <div class="header-actions">
 
         <button id="menu-button"
         class="header-btn"
-        onclick="toggleSidebar()">
-            ☰ Menu
-        </button>
+        onclick="toggleSidebar()">☰ Menu</button>
 
         <button class="header-btn"
-        onclick="locateMe()">
-            📍 GPS
-        </button>
+        onclick="locateMe()">📍 GPS</button>
 
     </div>
 
 </header>
 
-
 <div id="app">
 
 <aside id="sidebar">
 
+    <!-- SEARCH -->
 
-<!-- WORLD SEARCH -->
+    <div class="section">
 
-<div class="section">
+        <h2>🔎 Explore Locations</h2>
 
-    <h2>🔎 Search Worldwide</h2>
+        <input id="search-input"
+        placeholder="Search any country, city, village or street">
 
-    <input id="search-input"
-    placeholder="Search country, city or street">
+        <button class="primary full"
+        onclick="searchPlaces()">Search World</button>
 
-    <button class="primary full"
-    onclick="searchPlaces()">
-        Search Location
-    </button>
-
-    <div id="search-results"></div>
-
-</div>
-
-
-<!-- NAVIGATION -->
-
-<div class="section">
-
-    <h2>🚗 World Navigation</h2>
-
-    <p class="small-note" style="margin-bottom:10px">
-        Enter where your journey begins and where you want to go.
-    </p>
-
-    <label style="font-size:12px;font-weight:bold">
-        Starting Location
-    </label>
-
-    <input id="route-start"
-    placeholder="Your current location or starting place">
-
-    <button class="secondary full"
-    onclick="locateMe()"
-    style="margin-bottom:12px">
-        📍 Use My Current GPS Location
-    </button>
-
-    <label style="font-size:12px;font-weight:bold">
-        Destination
-    </label>
-
-    <input id="route-destination"
-    placeholder="Where do you want to go?">
-
-    <button class="primary full"
-    onclick="routeToDestination()">
-        🧭 Find My Route
-    </button>
-
-    <div id="route-result"></div>
-
-    <div id="directions"></div>
-
-</div>
-
-
-<!-- MAP SELECTION -->
-
-<div class="section">
-
-    <h2>📌 Select Locations on Map</h2>
-
-    <div class="button-grid">
-
-        <button class="action-btn"
-        onclick="enableMapSelection('start')">
-            📍 Select Start
-        </button>
-
-        <button class="action-btn"
-        onclick="enableMapSelection('destination')">
-            🎯 Select Destination
-        </button>
+        <div id="search-results"></div>
 
     </div>
 
-    <p class="small-note" id="selection-status"
-    style="margin-top:10px">
-        Select a button and tap the map to choose a location.
-    </p>
 
-</div>
+    <!-- MAP TYPES -->
 
+    <div class="section">
 
-<!-- MAP TYPES -->
+        <h2>🗺️ Map Appearance</h2>
 
-<div class="section">
+        <div class="grid">
 
-    <h2>🗺️ Map Types</h2>
+            <button class="layer-btn active"
+            data-layer="standard"
+            onclick="changeLayer('standard')">
+                <span>🌐</span>Standard
+            </button>
 
-    <div class="layer-grid">
+            <button class="layer-btn"
+            data-layer="satellite"
+            onclick="changeLayer('satellite')">
+                <span>🛰️</span>Satellite
+            </button>
 
-        <button class="layer-btn active"
-        data-layer="standard"
-        onclick="changeLayer('standard')">
+            <button class="layer-btn"
+            data-layer="hybrid"
+            onclick="changeLayer('hybrid')">
+                <span>🌎</span>Hybrid
+            </button>
 
-            <span>🌐</span>
-            Standard
+            <button class="layer-btn"
+            data-layer="terrain"
+            onclick="changeLayer('terrain')">
+                <span>⛰️</span>Terrain
+            </button>
 
-        </button>
-
-        <button class="layer-btn"
-        data-layer="satellite"
-        onclick="changeLayer('satellite')">
-
-            <span>🛰️</span>
-            Satellite
-
-        </button>
-
-        <button class="layer-btn"
-        data-layer="hybrid"
-        onclick="changeLayer('hybrid')">
-
-            <span>🌎</span>
-            Hybrid
-
-        </button>
-
-        <button class="layer-btn"
-        data-layer="terrain"
-        onclick="changeLayer('terrain')">
-
-            <span>⛰️</span>
-            Terrain
-
-        </button>
+        </div>
 
     </div>
 
-</div>
 
+    <!-- GLOBE CONTROLS -->
 
-<!-- GLOBE CONTROLS -->
+    <div class="section">
 
-<div class="section">
+        <h2>🌍 Rotate and Explore</h2>
 
-    <h2>🌍 Globe Controls</h2>
+        <div class="grid">
 
-    <div class="button-grid">
+            <button class="action-btn"
+            onclick="rotateGlobe(-30)">↶ Rotate Left</button>
 
-        <button class="action-btn"
-        onclick="map.zoomIn()">
-            ＋ Zoom In
-        </button>
+            <button class="action-btn"
+            onclick="rotateGlobe(30)">↷ Rotate Right</button>
 
-        <button class="action-btn"
-        onclick="map.zoomOut()">
-            － Zoom Out
-        </button>
+            <button class="action-btn"
+            onclick="toggleAutoRotate()">🔄 Auto Rotate</button>
 
-        <button class="action-btn"
-        onclick="resetGlobe()">
-            🌍 Reset Globe
-        </button>
+            <button class="action-btn"
+            onclick="resetGlobe()">🌍 Reset Globe</button>
 
-        <button class="action-btn"
-        onclick="map.setView(map.getCenter(),map.getZoom(),{animate:true})">
-            🔄 Refresh View
-        </button>
+            <button class="action-btn"
+            onclick="zoomIn()">＋ Zoom In</button>
 
-        <button class="action-btn"
-        onclick="map.setBearing(0)">
-            🧭 North Up
-        </button>
+            <button class="action-btn"
+            onclick="zoomOut()">－ Zoom Out</button>
 
-        <button class="action-btn"
-        onclick="clearRoute()">
-            ✖ Clear Route
-        </button>
+            <button class="action-btn"
+            onclick="map.easeTo({pitch:0})">⬆ Flat View</button>
 
-    </div>
+            <button class="action-btn"
+            onclick="map.easeTo({pitch:55})">🏙️ 3D View</button>
 
-</div>
+        </div>
 
-
-<!-- LOCATION INFORMATION -->
-
-<div class="section">
-
-    <h2>📍 Location Information</h2>
-
-    <div class="info-card"
-    id="location-info">
-
-        Tap anywhere on the map to explore a location.
+        <p class="small" style="margin-top:10px">
+            On a computer, hold the right mouse button and drag
+            to rotate. On a touchscreen, use two fingers to rotate
+            and zoom. You can also use the rotation buttons above.
+        </p>
 
     </div>
 
-    <div class="info-card"
-    id="coordinates"
-    style="margin-top:10px">
 
-        Longitude: --<br>
-        Latitude: --
+    <!-- LOCATION INFORMATION -->
 
-    </div>
+    <div class="section">
 
-</div>
+        <h2>📍 Selected Location</h2>
 
+        <div class="info" id="location-info">
+            Tap a location on the globe to explore it.
+        </div>
 
-<!-- SAFETY -->
-
-<div class="section">
-
-    <h2>🛡️ Travel Safety</h2>
-
-    <div class="info-card">
-
-        ✔ Uses mapped public roads for driving routes.<br>
-
-        ✔ Shows your starting and destination points.<br>
-
-        ✔ Displays estimated travel distance and time.<br>
-
-        ✔ Allows you to inspect your route before travelling.<br>
-
-        ✔ Avoids deliberately creating shortcuts through unmapped areas.
+        <div id="photos"></div>
 
     </div>
 
-    <p class="small-note" style="margin-top:10px">
 
-        Important: A mapped route cannot guarantee that a road
-        is safe, open or accessible. Check road conditions,
-        local security information and traffic signs before
-        travelling. Share your journey with someone you trust.
+    <!-- COMPASS -->
 
-    </p>
+    <div class="section">
 
-</div>
+        <h2>🧭 Compass and Qibla</h2>
+
+        <div class="compass-card">
+
+            <div>QIBLA DIRECTION</div>
+
+            <div class="compass">
+
+                <div class="direction north">N</div>
+                <div class="direction south">S</div>
+                <div class="direction east">E</div>
+                <div class="direction west">W</div>
+
+                <div id="qibla-arrow" class="compass-arrow"></div>
+
+                <div class="compass-center"></div>
+
+            </div>
+
+            <div class="kaaba">🕋</div>
+
+            <div class="qibla-angle" id="qibla-angle">--°</div>
+
+            <div style="font-size:11px;margin-top:5px">
+                Direction towards the Kaaba, Makkah
+            </div>
+
+            <button class="primary"
+            style="margin-top:13px"
+            onclick="activateCompass()">
+                Activate Phone Compass
+            </button>
+
+            <p class="small" style="color:#d6e6f7;margin-top:10px">
+                Place your phone flat and calibrate its compass
+                if the direction appears inaccurate.
+            </p>
+
+        </div>
+
+    </div>
 
 
-<div class="section">
+    <!-- JOURNEY PLANNER -->
 
-    <p class="small-note">
+    <div class="section">
 
-        Globe Explorer uses OpenStreetMap, Esri imagery,
-        OpenTopoMap and public routing services.
+        <h2>🚗 Journey Planner</h2>
 
-        Map coverage and imagery quality vary by location.
-        Satellite imagery is not live.
+        <p class="small" style="margin-bottom:10px">
+            Set your starting point and destination.
+            You can use GPS or search for either location.
+        </p>
 
-    </p>
+        <label style="font-size:12px;font-weight:bold">
+            Starting point
+        </label>
 
-</div>
+        <input id="start-input"
+        placeholder="Use GPS or enter starting location">
+
+        <button class="secondary full"
+        onclick="useGPSAsStart()">
+            📍 Use My Current Location
+        </button>
+
+        <br><br>
+
+        <label style="font-size:12px;font-weight:bold">
+            Destination
+        </label>
+
+        <input id="destination-input"
+        placeholder="Where do you want to go?">
+
+        <button class="primary full"
+        onclick="calculateRoute()">
+            Find My Route
+        </button>
+
+        <div id="route-result" style="margin-top:12px"></div>
+
+        <div class="route-box" style="margin-top:12px">
+
+            <strong>Travel safety reminder</strong>
+
+            <p style="margin-top:7px">
+                This route planner calculates road directions,
+                not crime or security conditions. It cannot
+                guarantee that a road is safe.
+            </p>
+
+            <p style="margin-top:7px">
+                Before travelling, ask a trusted adult about
+                the route, prefer familiar main roads, travel
+                with appropriate adult supervision, and share
+                your journey plan with your family.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- COORDINATES -->
+
+    <div class="section">
+
+        <h2>📌 Coordinates</h2>
+
+        <div class="info" id="coordinates">
+            Latitude: --<br>
+            Longitude: --
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <p class="small">
+            Map data © OpenStreetMap contributors.
+            Globe Explorer uses public mapping services.
+            Satellite images are not live.
+            Street names and photographs depend on available
+            information.
+        </p>
+
+    </div>
 
 </aside>
 
@@ -643,36 +684,37 @@ input:focus {
     <div class="map-tools">
 
         <button class="map-tool"
-        onclick="locateMe()">
-            📍
-        </button>
+        title="My location"
+        onclick="locateMe()">📍</button>
 
         <button class="map-tool"
-        onclick="map.zoomIn()">
-            ＋
-        </button>
+        title="Zoom in"
+        onclick="zoomIn()">＋</button>
 
         <button class="map-tool"
-        onclick="map.zoomOut()">
-            －
-        </button>
+        title="Zoom out"
+        onclick="zoomOut()">－</button>
 
         <button class="map-tool"
-        onclick="resetGlobe()">
-            🌍
-        </button>
+        title="Rotate left"
+        onclick="rotateGlobe(-30)">↶</button>
 
         <button class="map-tool"
-        onclick="toggleFullscreen()">
-            ⛶
-        </button>
+        title="Rotate right"
+        onclick="rotateGlobe(30)">↷</button>
+
+        <button class="map-tool"
+        title="Reset"
+        onclick="resetGlobe()">🌍</button>
+
+        <button class="map-tool"
+        title="Fullscreen"
+        onclick="toggleFullscreen()">⛶</button>
 
     </div>
 
     <div class="map-status" id="status">
-
-        Loading world map...
-
+        Preparing your 3D globe...
     </div>
 
 </main>
@@ -682,214 +724,309 @@ input:focus {
 
 <script>
 
-/* =========================================
-   GLOBE EXPLORER CONFIGURATION
-========================================= */
+/* ========================================
+   1. MAP CONFIGURATION
+======================================== */
 
-const STANDARD_URL =
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const MAP_STYLE =
+"https://tiles.openfreemap.org/styles/liberty";
 
-const SATELLITE_URL =
+const SATELLITE =
 "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-const TERRAIN_URL =
-"https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
+const TERRAIN =
+"https://tile.opentopomap.org/{z}/{x}/{y}.png";
 
-const HYBRID_URL =
-"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png";
-
+const KAABA = {
+    lat:21.4225,
+    lng:39.8262
+};
 
 let map;
-
-let standardLayer;
-let satelliteLayer;
-let terrainLayer;
-let hybridLayer;
-
-let currentLayer="standard";
-
-let userMarker=null;
-let startMarker=null;
-let destinationMarker=null;
-
+let marker=null;
+let startPoint=null;
+let destinationPoint=null;
 let userPosition=null;
-let selectedStart=null;
-let selectedDestination=null;
-
-let routeLayer=null;
-
-let selectionMode=null;
-
-
-/* =========================================
-   INITIALIZE WORLD MAP
-========================================= */
-
-map=L.map("map",{
-
-    center:[9,8.5],
-
-    zoom:3,
-
-    minZoom:2,
-
-    maxZoom:19,
-
-    zoomControl:false,
-
-    worldCopyJump:true
-
-});
+let currentLayer="standard";
+let autoRotate=false;
+let autoRotateTimer=null;
+let phoneHeading=0;
+let qiblaBearing=null;
+let routeDisplayed=false;
 
 
-/* =========================================
-   STANDARD MAP
-========================================= */
+/* ========================================
+   2. INITIALIZE REAL 3D GLOBE
+======================================== */
 
-standardLayer=L.tileLayer(STANDARD_URL,{
+map = new maplibregl.Map({
 
-    attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    container:"map",
 
-    maxZoom:19,
+    style:MAP_STYLE,
 
-    subdomains:"abc"
+    center:[20,15],
 
-}).addTo(map);
+    zoom:2,
 
+    minZoom:1,
 
-/* =========================================
-   SATELLITE MAP
-========================================= */
+    maxZoom:20,
 
-satelliteLayer=L.tileLayer(SATELLITE_URL,{
+    pitch:0,
 
-    attribution:"Imagery © Esri",
+    bearing:0,
 
-    maxZoom:19,
+    maxPitch:85,
 
-    maxNativeZoom:19
+    dragRotate:true,
+
+    touchZoomRotate:true,
+
+    touchPitch:true,
+
+    keyboard:true,
+
+    attributionControl:true
 
 });
 
 
-/* =========================================
-   TERRAIN MAP
-========================================= */
+map.addControl(
+    new maplibregl.NavigationControl({
+        showCompass:true,
+        showZoom:true,
+        visualizePitch:true
+    }),
+    "bottom-right"
+);
 
-terrainLayer=L.tileLayer(TERRAIN_URL,{
-
-    attribution:"Map data © OpenStreetMap contributors, SRTM | OpenTopoMap",
-
-    maxZoom:17,
-
-    subdomains:"abc"
-
-});
-
-
-/* =========================================
-   HYBRID MAP
-========================================= */
-
-hybridLayer=L.tileLayer(HYBRID_URL,{
-
-    attribution:"© OpenStreetMap contributors © CARTO",
-
-    maxZoom:19,
-
-    subdomains:"abc"
-
-});
+map.addControl(
+    new maplibregl.ScaleControl({
+        unit:"metric"
+    }),
+    "bottom-left"
+);
 
 
-/* =========================================
-   MAP READY
-========================================= */
+/* ========================================
+   3. LOAD GLOBE PROJECTION
+======================================== */
 
-map.whenReady(function(){
+map.on("style.load",function(){
 
-    setStatus("World map loaded successfully.");
+    try {
 
-    setTimeout(()=>map.invalidateSize(),300);
+        map.setProjection({
+            type:"globe"
+        });
 
-});
+    } catch(error) {
 
-
-/* =========================================
-   MAP TILE ERROR
-========================================= */
-
-let tileErrorShown=false;
-
-standardLayer.on("tileerror",function(){
-
-    if(!tileErrorShown){
-
-        tileErrorShown=true;
-
-        setStatus(
-            "Some map tiles could not load. Check your internet connection."
-        );
+        console.log(error);
 
     }
 
-});
+    addMapLayers();
 
+    styleWaterAndLand();
 
-standardLayer.on("tileload",function(){
-
-    tileErrorShown=false;
-
-    setStatus("World map is displaying.");
+    setStatus("3D Earth globe ready. Rotate to explore!");
 
 });
 
 
-/* =========================================
-   MAP TYPE SWITCHING
-========================================= */
+map.on("error",function(event){
+
+    console.warn("Map loading error:",event.error);
+
+});
+
+
+/* ========================================
+   4. BLUE OCEANS AND GREEN LAND
+======================================== */
+
+function styleWaterAndLand(){
+
+    try{
+
+        const layers=map.getStyle().layers || [];
+
+        layers.forEach(layer=>{
+
+            const name=(
+                layer.id+" "+
+                (layer["source-layer"] || "")
+            ).toLowerCase();
+
+            if(
+                layer.type==="fill" &&
+                /water|ocean|sea|lake|river/.test(name)
+            ){
+
+                try{
+
+                    map.setPaintProperty(
+                        layer.id,
+                        "fill-color",
+                        "#168bd2"
+                    );
+
+                }catch(error){}
+
+            }
+
+            if(
+                layer.type==="background"
+            ){
+
+                try{
+
+                    map.setPaintProperty(
+                        layer.id,
+                        "background-color",
+                        "#0878c9"
+                    );
+
+                }catch(error){}
+
+            }
+
+        });
+
+    }catch(error){}
+
+}
+
+
+/* ========================================
+   5. SATELLITE AND TERRAIN
+======================================== */
+
+function addMapLayers(){
+
+    if(map.getSource("satellite-source")) return;
+
+    const symbols=map.getStyle().layers.filter(
+        layer=>layer.type==="symbol"
+    );
+
+    const firstSymbol=symbols.length
+        ? symbols[0].id
+        : undefined;
+
+    map.addSource("satellite-source",{
+
+        type:"raster",
+
+        tiles:[SATELLITE],
+
+        tileSize:256,
+
+        maxzoom:19,
+
+        attribution:"Imagery © Esri"
+
+    });
+
+    map.addLayer({
+
+        id:"satellite-layer",
+
+        type:"raster",
+
+        source:"satellite-source",
+
+        layout:{
+            visibility:"none"
+        }
+
+    },firstSymbol);
+
+
+    map.addSource("terrain-source",{
+
+        type:"raster",
+
+        tiles:[TERRAIN],
+
+        tileSize:256,
+
+        maxzoom:17,
+
+        attribution:"© OpenTopoMap contributors"
+
+    });
+
+    map.addLayer({
+
+        id:"terrain-layer",
+
+        type:"raster",
+
+        source:"terrain-source",
+
+        layout:{
+            visibility:"none"
+        }
+
+    },firstSymbol);
+
+}
+
+
+/* ========================================
+   6. CHANGE MAP STYLE
+======================================== */
 
 function changeLayer(type){
 
-    map.removeLayer(standardLayer);
-    map.removeLayer(satelliteLayer);
-    map.removeLayer(terrainLayer);
-    map.removeLayer(hybridLayer);
+    if(!map.getLayer("satellite-layer")){
+
+        setStatus("Map layers are still loading.");
+
+        return;
+
+    }
 
     currentLayer=type;
 
-    if(type==="standard"){
+    map.setLayoutProperty(
+        "satellite-layer",
+        "visibility",
+        type==="satellite" || type==="hybrid"
+        ? "visible":"none"
+    );
 
-        standardLayer.addTo(map);
+    map.setLayoutProperty(
+        "terrain-layer",
+        "visibility",
+        type==="terrain" ? "visible":"none"
+    );
 
-        setStatus("Standard street map selected.");
+    const symbols=map.getStyle().layers.filter(
+        layer=>layer.type==="symbol"
+    );
+
+    if(type==="hybrid" && symbols.length){
+
+        map.moveLayer(
+            "satellite-layer",
+            symbols[0].id
+        );
 
     }
 
     if(type==="satellite"){
 
-        satelliteLayer.addTo(map);
-
-        setStatus("Satellite imagery selected.");
+        map.moveLayer("satellite-layer");
 
     }
 
-    if(type==="hybrid"){
+    if(type==="standard" || type==="terrain"){
 
-        satelliteLayer.addTo(map);
-
-        hybridLayer.addTo(map);
-
-        setStatus("Hybrid map selected.");
-
-    }
-
-    if(type==="terrain"){
-
-        terrainLayer.addTo(map);
-
-        setStatus("Terrain map selected.");
+        styleWaterAndLand();
 
     }
 
@@ -897,48 +1034,129 @@ function changeLayer(type){
     .forEach(button=>{
 
         button.classList.toggle(
-
             "active",
-
             button.dataset.layer===type
-
         );
 
     });
 
+    setStatus(type.toUpperCase()+" MAP SELECTED");
+
 }
 
 
-/* =========================================
-   SEARCH WORLDWIDE
-========================================= */
+/* ========================================
+   7. GLOBE ROTATION
+======================================== */
+
+function rotateGlobe(degrees){
+
+    map.rotateTo(
+
+        map.getBearing()+degrees,
+
+        {duration:700}
+
+    );
+
+}
+
+function toggleAutoRotate(){
+
+    autoRotate=!autoRotate;
+
+    if(autoRotate){
+
+        autoRotateTimer=setInterval(()=>{
+
+            if(map.getZoom()<=5){
+
+                map.rotateTo(
+                    map.getBearing()+0.25,
+                    {duration:0}
+                );
+
+            }
+
+        },40);
+
+        setStatus("Automatic globe rotation enabled.");
+
+    }else{
+
+        clearInterval(autoRotateTimer);
+
+        setStatus("Automatic globe rotation stopped.");
+
+    }
+
+}
+
+function resetGlobe(){
+
+    map.flyTo({
+
+        center:[20,15],
+
+        zoom:2,
+
+        bearing:0,
+
+        pitch:0,
+
+        speed:1
+
+    });
+
+    setStatus("Globe reset.");
+
+}
+
+
+/* ========================================
+   8. ZOOM
+======================================== */
+
+function zoomIn(){
+
+    map.zoomIn({duration:500});
+
+}
+
+function zoomOut(){
+
+    map.zoomOut({duration:500});
+
+}
+
+
+/* ========================================
+   9. WORLDWIDE SEARCH
+======================================== */
 
 async function searchPlaces(){
 
     const query=
     document.getElementById("search-input").value.trim();
 
-    const box=
-    document.getElementById("search-results");
+    const box=document.getElementById("search-results");
 
     if(!query){
 
-        box.textContent="Enter a location to search.";
+        box.innerText="Enter a place to search.";
 
         return;
 
     }
 
-    box.textContent="Searching worldwide...";
+    box.innerText="Searching...";
 
     try{
 
         const response=await fetch(
-
             "https://photon.komoot.io/api/?q="+
             encodeURIComponent(query)+
             "&limit=8"
-
         );
 
         if(!response.ok) throw new Error();
@@ -949,7 +1167,7 @@ async function searchPlaces(){
 
         if(!data.features.length){
 
-            box.textContent="No matching places found.";
+            box.innerText="No results found.";
 
             return;
 
@@ -961,20 +1179,14 @@ async function searchPlaces(){
 
             const coords=feature.geometry.coordinates;
 
-            const name=p.name || "Unnamed location";
+            const name=p.name || "Unnamed place";
 
             const address=[
-
                 p.street,
-
                 p.district,
-
                 p.city,
-
                 p.state,
-
                 p.country
-
             ].filter(Boolean).join(", ");
 
             const item=document.createElement("div");
@@ -985,28 +1197,23 @@ async function searchPlaces(){
 
             title.textContent=name;
 
-            const detail=document.createElement("small");
+            const details=document.createElement("small");
 
-            detail.textContent=address;
+            details.textContent=address;
 
-            item.append(title,detail);
+            item.append(title,details);
 
             item.onclick=()=>{
 
-                map.flyTo(coords.reverse(),15);
+                map.flyTo({
 
-                selectedDestination={
+                    center:coords,
 
-                    lng:coords[0],
+                    zoom:16,
 
-                    lat:coords[1]
+                    speed:1.2
 
-                };
-
-                setDestinationMarker(
-                    coords[0],
-                    coords[1]
-                );
+                });
 
                 selectLocation(
                     coords[0],
@@ -1015,18 +1222,8 @@ async function searchPlaces(){
                 );
 
                 document.getElementById(
-                    "route-destination"
+                    "destination-input"
                 ).value=name;
-
-                document.getElementById(
-                    "search-input"
-                ).value=name;
-
-                if(window.innerWidth<800){
-
-                    toggleSidebar();
-
-                }
 
             };
 
@@ -1036,257 +1233,238 @@ async function searchPlaces(){
 
     }catch(error){
 
-        box.textContent=
+        box.innerText=
         "Search unavailable. Check your internet connection.";
 
     }
 
 }
 
-
 document.getElementById("search-input")
 .addEventListener("keydown",event=>{
 
-    if(event.key==="Enter"){
-
-        searchPlaces();
-
-    }
+    if(event.key==="Enter") searchPlaces();
 
 });
 
 
-/* =========================================
-   REVERSE GEOCODING
-========================================= */
+/* ========================================
+   10. TAP THE MAP TO SELECT A PLACE
+======================================== */
 
-async function getAddress(lat,lng){
+map.on("click",async function(event){
+
+    const lng=event.lngLat.lng;
+
+    const lat=event.lngLat.lat;
+
+    await selectLocation(lng,lat);
+
+});
+
+
+async function selectLocation(lng,lat,feature=null){
+
+    if(marker){
+
+        marker.remove();
+
+    }
+
+    marker=new maplibregl.Marker({
+        color:"#e7b94d"
+    })
+    .setLngLat([lng,lat])
+    .addTo(map);
+
+    document.getElementById("coordinates").innerHTML=
+
+    "<strong>Latitude:</strong> "+lat.toFixed(6)+
+    "<br><strong>Longitude:</strong> "+lng.toFixed(6);
+
+    const info=document.getElementById("location-info");
+
+    info.innerText="Loading area information...";
+
+    let name="Selected location";
+
+    let address="";
 
     try{
 
         const response=await fetch(
-
-            "https://photon.komoot.io/reverse?lat="+
-            lat+"&lon="+lng
-
+            "https://photon.komoot.io/reverse?lon="+
+            lng+"&lat="+lat
         );
 
-        if(!response.ok) return "Unknown location";
+        if(response.ok){
 
-        const data=await response.json();
+            const data=await response.json();
 
-        if(!data.features?.length){
+            if(data.features?.length){
 
-            return "Unknown location";
+                const p=data.features[0].properties;
+
+                name=p.name || name;
+
+                address=[
+                    p.housenumber,
+                    p.street,
+                    p.district,
+                    p.city,
+                    p.state,
+                    p.country
+                ].filter(Boolean).join(", ");
+
+            }
 
         }
 
-        const p=data.features[0].properties;
-
-        return [
-
-            p.name,
-
-            p.street,
-
-            p.district,
-
-            p.city,
-
-            p.state,
-
-            p.country
-
-        ].filter(Boolean).join(", ");
-
-    }catch(error){
-
-        return "Address unavailable";
-
-    }
-
-}
-
-
-/* =========================================
-   SELECT LOCATION
-========================================= */
-
-async function selectLocation(lng,lat,feature=null){
-
-    document.getElementById("coordinates").innerHTML=
-
-    "<strong>Longitude:</strong> "+lng.toFixed(6)+
-    "<br><strong>Latitude:</strong> "+lat.toFixed(6);
-
-    const info=document.getElementById("location-info");
-
-    info.textContent="Finding location information...";
-
-    let address=await getAddress(lat,lng);
+    }catch(error){}
 
     if(feature?.properties){
 
         const p=feature.properties;
 
+        name=p.name || name;
+
         address=[
-
-            p.name,
-
             p.street,
-
             p.district,
-
             p.city,
-
             p.state,
-
             p.country
-
         ].filter(Boolean).join(", ") || address;
 
     }
 
-    info.textContent=address;
+    info.innerHTML="";
 
-    setStatus("Location selected.");
+    const heading=document.createElement("strong");
 
-}
+    heading.textContent=name;
 
+    const addressElement=document.createElement("div");
 
-/* =========================================
-   SET DESTINATION MARKER
-========================================= */
+    addressElement.textContent=
+    address || "No detailed address available.";
 
-function setDestinationMarker(lng,lat){
+    info.append(heading,addressElement);
 
-    if(destinationMarker){
+    document.getElementById(
+        "start-input"
+    ).value ||= name;
 
-        map.removeLayer(destinationMarker);
+    setStatus("Exploring "+name);
 
-    }
-
-    destinationMarker=L.marker([lat,lng])
-
-    .addTo(map)
-
-    .bindPopup("🎯 Destination")
-
-    .openPopup();
+    loadAreaPhotos(name,address);
 
 }
 
 
-/* =========================================
-   SET START MARKER
-========================================= */
+/* ========================================
+   11. PHOTOGRAPHS OF SEARCHED AREAS
+======================================== */
 
-function setStartMarker(lng,lat){
+async function loadAreaPhotos(name,address){
 
-    if(startMarker){
+    const box=document.getElementById("photos");
 
-        map.removeLayer(startMarker);
+    box.innerHTML=
+    "<p class='small'>Searching for area photographs...</p>";
+
+    const searchText=[name,address].filter(Boolean).join(" ");
+
+    try{
+
+        const url=
+        "https://commons.wikimedia.org/w/api.php"+
+        "?action=query"+
+        "&generator=search"+
+        "&gsrsearch="+encodeURIComponent(searchText)+
+        "&gsrnamespace=6"+
+        "&gsrlimit=6"+
+        "&prop=imageinfo"+
+        "&iiprop=url"+
+        "&iiurlwidth=500"+
+        "&format=json"+
+        "&origin=*";
+
+        const response=await fetch(url);
+
+        if(!response.ok) throw new Error();
+
+        const data=await response.json();
+
+        const pages=data.query?.pages;
+
+        box.innerHTML=
+        "<h2 style='font-size:14px;margin-top:14px'>📸 Area Photographs</h2>";
+
+        if(!pages){
+
+            box.innerHTML+=
+            "<p class='small'>No photographs found for this location.</p>";
+
+            return;
+
+        }
+
+        Object.values(pages).forEach(page=>{
+
+            const image=page.imageinfo?.[0];
+
+            if(!image) return;
+
+            const img=document.createElement("img");
+
+            img.className="photo";
+
+            img.src=image.thumburl || image.url;
+
+            img.alt=page.title;
+
+            img.loading="lazy";
+
+            img.onerror=()=>img.remove();
+
+            box.appendChild(img);
+
+            const link=document.createElement("a");
+
+            link.className="photo-link";
+
+            link.href=image.descriptionurl || image.url;
+
+            link.target="_blank";
+
+            link.rel="noopener";
+
+            link.textContent="View image source";
+
+            box.appendChild(link);
+
+        });
+
+    }catch(error){
+
+        box.innerHTML=
+        "<p class='small'>Photographs temporarily unavailable.</p>";
 
     }
-
-    startMarker=L.marker([lat,lng])
-
-    .addTo(map)
-
-    .bindPopup("📍 Starting point");
 
 }
 
 
-/* =========================================
-   SELECT POINTS DIRECTLY ON MAP
-========================================= */
-
-function enableMapSelection(mode){
-
-    selectionMode=mode;
-
-    if(mode==="start"){
-
-        document.getElementById(
-            "selection-status"
-        ).textContent=
-
-        "Now tap the map to select your starting point.";
-
-    }else{
-
-        document.getElementById(
-            "selection-status"
-        ).textContent=
-
-        "Now tap the map to select your destination.";
-
-    }
-
-}
-
-
-map.on("click",async function(event){
-
-    const lat=event.latlng.lat;
-
-    const lng=event.latlng.lng;
-
-    if(selectionMode==="start"){
-
-        selectedStart={lat,lng};
-
-        setStartMarker(lng,lat);
-
-        document.getElementById(
-            "route-start"
-        ).value=lat.toFixed(5)+", "+lng.toFixed(5);
-
-        document.getElementById(
-            "selection-status"
-        ).textContent="Starting location selected.";
-
-        selectionMode=null;
-
-    }
-
-    else if(selectionMode==="destination"){
-
-        selectedDestination={lat,lng};
-
-        setDestinationMarker(lng,lat);
-
-        document.getElementById(
-            "route-destination"
-        ).value=lat.toFixed(5)+", "+lng.toFixed(5);
-
-        document.getElementById(
-            "selection-status"
-        ).textContent="Destination selected.";
-
-        selectionMode=null;
-
-    }
-
-    else{
-
-        await selectLocation(lng,lat);
-
-    }
-
-});
-
-
-/* =========================================
-   GPS CURRENT LOCATION
-========================================= */
+/* ========================================
+   12. GPS
+======================================== */
 
 function locateMe(){
 
     if(!navigator.geolocation){
 
-        alert("GPS is not supported by this browser.");
+        alert("GPS is not supported.");
 
         return;
 
@@ -1304,47 +1482,24 @@ function locateMe(){
 
             userPosition={lat,lng};
 
-            selectedStart={lat,lng};
+            startPoint={lat,lng};
 
-            document.getElementById(
-                "route-start"
-            ).value="My Current Location";
+            document.getElementById("start-input").value=
+            "My current GPS location";
 
-            if(userMarker){
+            map.flyTo({
 
-                map.removeLayer(userMarker);
+                center:[lng,lat],
 
-            }
+                zoom:17,
 
-            userMarker=L.circleMarker([lat,lng],{
-
-                radius:10,
-
-                color:"#ffffff",
-
-                weight:3,
-
-                fillColor:"#0878e8",
-
-                fillOpacity:1
-
-            })
-
-            .addTo(map)
-
-            .bindPopup("📍 Your Current Location")
-
-            .openPopup();
-
-            setStartMarker(lng,lat);
-
-            map.flyTo([lat,lng],16,{
-
-                duration:1.5
+                speed:1.2
 
             });
 
             await selectLocation(lng,lat);
+
+            calculateQibla(lat,lng);
 
             setStatus("Your GPS location is displayed.");
 
@@ -1352,32 +1507,11 @@ function locateMe(){
 
         error=>{
 
-            let message="Unable to access GPS.";
-
-            if(error.code===1){
-
-                message="Location permission denied.";
-
-            }
-
-            if(error.code===2){
-
-                message="Your current location is unavailable.";
-
-            }
-
-            if(error.code===3){
-
-                message="GPS request timed out.";
-
-            }
-
-            setStatus(message);
-
             alert(
-                message+
-                " Allow location access and check your GPS settings."
+                "Please allow location permission in your browser."
             );
+
+            setStatus("GPS unavailable.");
 
         },
 
@@ -1385,9 +1519,9 @@ function locateMe(){
 
             enableHighAccuracy:true,
 
-            timeout:20000,
+            timeout:15000,
 
-            maximumAge:5000
+            maximumAge:10000
 
         }
 
@@ -1396,501 +1530,357 @@ function locateMe(){
 }
 
 
-/* =========================================
-   GEOCODE STARTING POINT
-========================================= */
+function useGPSAsStart(){
 
-async function findCoordinates(query){
+    if(userPosition){
 
-    const response=await fetch(
+        startPoint=userPosition;
 
-        "https://photon.komoot.io/api/?q="+
-        encodeURIComponent(query)+
-        "&limit=5"
+        document.getElementById("start-input").value=
+        "My current GPS location";
 
-    );
-
-    if(!response.ok){
-
-        throw new Error("Location search failed.");
+        return;
 
     }
+
+    locateMe();
+
+}
+
+
+/* ========================================
+   13. QIBLA CALCULATION
+======================================== */
+
+function toRadians(degrees){
+
+    return degrees*Math.PI/180;
+
+}
+
+function toDegrees(radians){
+
+    return radians*180/Math.PI;
+
+}
+
+function calculateQibla(lat,lng){
+
+    const lat1=toRadians(lat);
+
+    const lat2=toRadians(KAABA.lat);
+
+    const deltaLng=toRadians(KAABA.lng-lng);
+
+    const y=Math.sin(deltaLng)*Math.cos(lat2);
+
+    const x=
+        Math.cos(lat1)*Math.sin(lat2)-
+        Math.sin(lat1)*Math.cos(lat2)*Math.cos(deltaLng);
+
+    let bearing=toDegrees(Math.atan2(y,x));
+
+    bearing=(bearing+360)%360;
+
+    qiblaBearing=bearing;
+
+    document.getElementById("qibla-angle").innerText=
+    bearing.toFixed(1)+"°";
+
+    updateCompass();
+
+}
+
+
+/* ========================================
+   14. PHONE COMPASS
+======================================== */
+
+async function activateCompass(){
+
+    if(!userPosition){
+
+        alert("First allow GPS so the Qibla direction can be calculated.");
+
+        return;
+
+    }
+
+    calculateQibla(
+        userPosition.lat,
+        userPosition.lng
+    );
+
+    if(typeof DeviceOrientationEvent!=="undefined" &&
+       typeof DeviceOrientationEvent.requestPermission==="function"){
+
+        try{
+
+            const permission=
+            await DeviceOrientationEvent.requestPermission();
+
+            if(permission!=="granted"){
+
+                alert("Compass permission was not granted.");
+
+                return;
+
+            }
+
+        }catch(error){
+
+            alert("Phone compass is unavailable.");
+
+            return;
+
+        }
+
+    }
+
+    window.addEventListener(
+        "deviceorientation",
+        handleOrientation,
+        true
+    );
+
+    alert(
+        "Compass activated. Keep the phone flat and away from magnetic objects."
+    );
+
+}
+
+
+function handleOrientation(event){
+
+    let heading=null;
+
+    if(typeof event.webkitCompassHeading==="number"){
+
+        heading=event.webkitCompassHeading;
+
+    }else if(typeof event.alpha==="number"){
+
+        heading=360-event.alpha;
+
+    }
+
+    if(heading===null) return;
+
+    phoneHeading=heading;
+
+    updateCompass();
+
+}
+
+
+function updateCompass(){
+
+    if(qiblaBearing===null) return;
+
+    const relative=qiblaBearing-phoneHeading;
+
+    document.getElementById("qibla-arrow").style.transform=
+    "translate(-50%,-100%) rotate("+relative+"deg)";
+
+}
+
+
+/* ========================================
+   15. JOURNEY PLANNER
+======================================== */
+
+async function geocodePlace(query){
+
+    const response=await fetch(
+        "https://photon.komoot.io/api/?q="+
+        encodeURIComponent(query)+
+        "&limit=1"
+    );
+
+    if(!response.ok) throw new Error();
 
     const data=await response.json();
 
-    if(!data.features?.length){
+    if(!data.features?.length) throw new Error();
 
-        throw new Error("Location not found.");
-
-    }
-
-    const feature=data.features[0];
+    const coords=data.features[0].geometry.coordinates;
 
     return {
-
-        lng:feature.geometry.coordinates[0],
-
-        lat:feature.geometry.coordinates[1],
-
-        feature:feature
-
+        lng:coords[0],
+        lat:coords[1],
+        name:data.features[0].properties.name || query
     };
 
 }
 
 
-/* =========================================
-   DRAW ROUTE
-========================================= */
+async function calculateRoute(){
 
-async function routeToDestination(){
+    const startText=
+    document.getElementById("start-input").value.trim();
 
-    const startInput=
-    document.getElementById("route-start").value.trim();
+    const destinationText=
+    document.getElementById("destination-input").value.trim();
 
-    const destinationInput=
-    document.getElementById("route-destination").value.trim();
+    const result=document.getElementById("route-result");
 
-    const result=
-    document.getElementById("route-result");
+    if(!destinationText){
 
-    const directions=
-    document.getElementById("directions");
-
-    if(!startInput){
-
-        result.textContent=
-        "Please enter a starting location or use GPS.";
+        result.innerText="Enter your destination.";
 
         return;
 
     }
 
-    if(!destinationInput){
-
-        result.textContent=
-        "Please enter your destination.";
-
-        return;
-
-    }
-
-    result.textContent="Preparing your journey...";
-
-    directions.innerHTML="";
+    result.innerText="Finding your route...";
 
     try{
 
-        let start;
+        let start=startPoint;
 
-        if(
+        if(!start && startText){
 
-            userPosition &&
-            startInput==="My Current Location"
-
-        ){
-
-            start={
-
-                lng:userPosition.lng,
-
-                lat:userPosition.lat
-
-            };
+            start=await geocodePlace(startText);
 
         }
 
-        else if(selectedStart &&
+        if(!start){
 
-            startInput===
-            (selectedStart.lat.toFixed(5)+", "+selectedStart.lng.toFixed(5))
+            result.innerText=
+            "Set a starting point using GPS or enter an address.";
 
-        ){
-
-            start={
-
-                lng:selectedStart.lng,
-
-                lat:selectedStart.lat
-
-            };
+            return;
 
         }
 
-        else{
+        const destination=await geocodePlace(destinationText);
 
-            result.textContent="Finding starting location...";
+        startPoint=start;
 
-            start=await findCoordinates(startInput);
+        destinationPoint=destination;
 
-        }
-
-
-        result.textContent="Finding destination...";
-
-        let end;
-
-        if(selectedDestination &&
-
-            destinationInput===
-            (selectedDestination.lat.toFixed(5)+", "+selectedDestination.lng.toFixed(5))
-
-        ){
-
-            end={
-
-                lng:selectedDestination.lng,
-
-                lat:selectedDestination.lat
-
-            };
-
-        }
-
-        else{
-
-            end=await findCoordinates(destinationInput);
-
-        }
-
-
-        selectedStart={lat:start.lat,lng:start.lng};
-
-        selectedDestination={lat:end.lat,lng:end.lng};
-
-        setStartMarker(start.lng,start.lat);
-
-        setDestinationMarker(end.lng,end.lat);
-
-
-        result.textContent="Calculating the driving route...";
-
-
-        const routeURL=
-
+        const url=
         "https://router.project-osrm.org/route/v1/driving/"+
-
         start.lng+","+start.lat+";"+
-
-        end.lng+","+end.lat+
-
+        destination.lng+","+destination.lat+
         "?overview=full&geometries=geojson&steps=true";
 
+        const response=await fetch(url);
 
-        const response=await fetch(routeURL);
-
-        if(!response.ok){
-
-            throw new Error("Routing service unavailable.");
-
-        }
+        if(!response.ok) throw new Error();
 
         const data=await response.json();
 
-        if(
+        if(data.code!=="Ok" || !data.routes.length){
 
-            data.code!=="Ok" ||
+            result.innerText="No driving route found.";
 
-            !data.routes ||
-
-            !data.routes.length
-
-        ){
-
-            throw new Error("No driving route found.");
+            return;
 
         }
-
 
         const route=data.routes[0];
 
+        if(map.getLayer("route-line")){
 
-        /* REMOVE OLD ROUTE */
-
-        if(routeLayer){
-
-            map.removeLayer(routeLayer);
+            map.removeLayer("route-line");
 
         }
 
+        if(map.getSource("route-source")){
 
-        /* DRAW NEW ROUTE */
+            map.removeSource("route-source");
 
-        routeLayer=L.geoJSON(
+        }
 
-            route.geometry,
+        map.addSource("route-source",{
 
-            {
+            type:"geojson",
 
-                style:{
-
-                    color:"#0878e8",
-
-                    weight:6,
-
-                    opacity:0.95,
-
-                    lineCap:"round",
-
-                    lineJoin:"round"
-
-                }
-
+            data:{
+                type:"Feature",
+                properties:{},
+                geometry:route.geometry
             }
 
-        ).addTo(map);
+        });
 
+        map.addLayer({
 
-        /* FIT MAP TO ROUTE */
+            id:"route-line",
 
-        map.fitBounds(routeLayer.getBounds(),{
+            type:"line",
 
-            padding:[55,55],
+            source:"route-source",
+
+            layout:{
+                "line-join":"round",
+                "line-cap":"round"
+            },
+
+            paint:{
+                "line-color":"#0878e8",
+                "line-width":5
+            }
+
+        });
+
+        const bounds=new maplibregl.LngLatBounds();
+
+        route.geometry.coordinates.forEach(point=>{
+
+            bounds.extend(point);
+
+        });
+
+        map.fitBounds(bounds,{
+
+            padding:65,
 
             maxZoom:15,
 
-            animate:true
+            duration:1300
 
         });
 
+        const km=(route.distance/1000).toFixed(2);
 
-        /* DISTANCE AND TIME */
-
-        const distance=
-
-        (route.distance/1000).toFixed(2);
-
-        const minutes=
-
-        Math.round(route.duration/60);
-
-        const hours=
-
-        Math.floor(minutes/60);
-
-        const remaining=
-
-        minutes%60;
-
-
-        let timeText=
-
-        hours>0?
-
-        hours+" hours "+remaining+" minutes":
-
-        minutes+" minutes";
-
+        const minutes=Math.round(route.duration/60);
 
         result.innerHTML=
-
-        "<div class='info-card'>"+
-
-        "<strong style='color:#0878e8;font-size:15px'>✓ Route found!</strong><br>"+
-
-        "📏 Distance: <strong>"+distance+" km</strong><br>"+
-
-        "⏱ Estimated driving time: <strong>"+timeText+"</strong><br>"+
-
-        "🚗 Travel mode: Driving<br>"+
-
-        "<small>Actual journey time may vary.</small>"+
-
+        "<div class='route-box'>"+
+        "<strong>Journey route found!</strong><br><br>"+
+        "Starting point: "+startText+"<br>"+
+        "Destination: "+destination.name+"<br>"+
+        "Distance: "+km+" km<br>"+
+        "Estimated driving time: "+minutes+" minutes"+
+        "<br><br>"+
+        "<span style='color:#b45309'>"+
+        "This is a road-navigation estimate, not a security assessment."+
+        "</span>"+
+        "<br><br>"+
+        "<a target='_blank' rel='noopener' href='https://www.google.com/maps/dir/?api=1&origin="+
+        start.lat+","+start.lng+
+        "&destination="+destination.lat+","+destination.lng+
+        "&travelmode=driving'>"+
+        "Open route in Google Maps</a>"+
         "</div>";
 
+        setStatus("Journey route displayed.");
 
-        /* DIRECTIONS */
+    }catch(error){
 
-        directions.innerHTML=
-
-        "<h3 style='font-size:14px;margin-bottom:8px'>🧭 Journey Instructions</h3>";
-
-
-        route.legs.forEach(leg=>{
-
-            leg.steps.forEach((step,index)=>{
-
-                const maneuver=step.maneuver || {};
-
-                const type=maneuver.type || "continue";
-
-                const modifier=maneuver.modifier || "";
-
-                let instruction="Continue";
-
-                if(type==="turn"){
-
-                    instruction="Turn "+modifier;
-
-                }
-
-                else if(type==="depart"){
-
-                    instruction="Start your journey";
-
-                }
-
-                else if(type==="arrive"){
-
-                    instruction="You have arrived at your destination";
-
-                }
-
-                else if(type==="roundabout"){
-
-                    instruction="Enter the roundabout";
-
-                }
-
-                else if(type==="merge"){
-
-                    instruction="Merge onto the road";
-
-                }
-
-                else if(type==="fork"){
-
-                    instruction="Take the "+modifier+" fork";
-
-                }
-
-                else if(type==="new name"){
-
-                    instruction="Continue onto the next road";
-
-                }
-
-                else if(type==="end of road"){
-
-                    instruction="At the end of the road, turn "+modifier;
-
-                }
-
-                else if(type==="continue"){
-
-                    instruction="Continue straight";
-
-                }
-
-
-                const street=step.name || "Unnamed road";
-
-                const metres=step.distance;
-
-                let distanceText=
-
-                metres>=1000?
-
-                (metres/1000).toFixed(2)+" km":
-
-                Math.round(metres)+" m";
-
-
-                const item=document.createElement("div");
-
-                item.className="direction-item";
-
-                const heading=document.createElement("strong");
-
-                heading.textContent=(index+1)+". "+instruction;
-
-                const description=document.createElement("div");
-
-                description.textContent=
-
-                street+" · "+distanceText;
-
-                item.append(heading,description);
-
-                directions.appendChild(item);
-
-            });
-
-        });
-
-
-        setStatus("Your driving route is ready.");
-
-    }
-
-    catch(error){
-
-        result.textContent=
-
-        error.message+
-
-        " Check the place names or try again.";
-
-        setStatus("Unable to calculate route.");
+        result.innerText=
+        "Could not calculate the route. Check the locations and try again.";
 
     }
 
 }
 
 
-/* =========================================
-   CLEAR ROUTE
-========================================= */
-
-function clearRoute(){
-
-    if(routeLayer){
-
-        map.removeLayer(routeLayer);
-
-        routeLayer=null;
-
-    }
-
-    if(startMarker){
-
-        map.removeLayer(startMarker);
-
-        startMarker=null;
-
-    }
-
-    if(destinationMarker){
-
-        map.removeLayer(destinationMarker);
-
-        destinationMarker=null;
-
-    }
-
-    selectedStart=null;
-
-    selectedDestination=null;
-
-    document.getElementById("route-result").innerHTML="";
-
-    document.getElementById("directions").innerHTML="";
-
-    setStatus("Route cleared.");
-
-}
-
-
-/* =========================================
-   RESET WORLD MAP
-========================================= */
-
-function resetGlobe(){
-
-    map.flyTo([9,8.5],3,{
-
-        duration:1.2
-
-    });
-
-    setStatus("World map reset.");
-
-}
-
-
-/* =========================================
-   FULLSCREEN
-========================================= */
+/* ========================================
+   16. FULL SCREEN
+======================================== */
 
 function toggleFullscreen(){
 
@@ -1900,63 +1890,55 @@ function toggleFullscreen(){
 
         element.requestFullscreen?.();
 
-    }
-
-    else{
+    }else{
 
         document.exitFullscreen?.();
 
     }
 
-    setTimeout(()=>map.invalidateSize(),300);
+    setTimeout(()=>map.resize(),300);
 
 }
 
 
-/* =========================================
-   MOBILE MENU
-========================================= */
+/* ========================================
+   17. SIDEBAR
+======================================== */
 
 function toggleSidebar(){
 
     document.getElementById("sidebar")
-
     .classList.toggle("open");
 
 }
 
 
-/* =========================================
-   STATUS
-========================================= */
-
-function setStatus(message){
-
-    document.getElementById("status").textContent=message;
-
-}
-
-
-/* =========================================
-   RESPONSIVE MAP
-========================================= */
+/* ========================================
+   18. MAP RESIZE
+======================================== */
 
 window.addEventListener("resize",()=>{
 
-    if(map){
-
-        map.invalidateSize();
-
-    }
+    if(map) map.resize();
 
 });
-
 
 document.addEventListener("fullscreenchange",()=>{
 
-    setTimeout(()=>map.invalidateSize(),300);
+    setTimeout(()=>map.resize(),200);
 
 });
+
+
+/* ========================================
+   19. STATUS
+======================================== */
+
+function setStatus(message){
+
+    document.getElementById("status").innerText=message;
+
+}
 
 </script>
 
